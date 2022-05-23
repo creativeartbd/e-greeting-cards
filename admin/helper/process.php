@@ -1,10 +1,116 @@
 <?php 
 require_once 'functions.php';
 
-// Create domain 
+// Create design 
+if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST['form'] == 'update_design' ) ) {
+
+    $domain = validate( $_POST['domain'] );
+    $design = validate( $_POST['design'] );
+    $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : 0;
+    $form = validate( $_POST['form'] );
+
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = "all-design.php";
+
+    $check_design = mysqli_query( $mysqli, "SELECT domain_id FROM eg_design WHERE domain_id = '$domain' ");
+    $found_design = mysqli_num_rows( $check_design );
+
+    $file_name = $file_tmp_name = $file_size = $file_type = $extension = '';
+    if( isset( $_FILES['design']['name'] ) ) {
+        $file_name = validate( $_FILES['design']['name'] );
+        $file_tmp_name = validate( $_FILES['design']['tmp_name'] );
+        $file_size = validate( $_FILES['design']['size'] );
+        $file_type = validate( $_FILES['design']['type'] );
+
+        $allowed_extension = [ 'jpg', 'jpeg', 'png', 'gif' ];
+        $explode = explode( '.', $file_name );
+        $extension = end( $explode );
+    }
+    $allowed_file_size = 5000000; // 5 MB file size allowed
+    $new_file_name = time().'.'.$extension;
+
+
+    if( isset( $domain ) && isset( $file_name ) && isset( $design ) ) {
+        if( empty( $domain ) && empty( $file_name ) && empty( $design ) ) {
+            $output['message'][] = 'All field is required.';
+        } else {
+
+            if( empty( $design ) ) {
+                $output['message'][] = 'Enter your design title.';
+            } elseif( !preg_match('/^[a-zA-Z. ]+$/', $design) ) {
+                $output['message'][] = 'Your design title should be contain only characters.';
+            } elseif( strlen( $design) > 40 || strlen( $design ) < 2 ) {
+                $output['message'][] = 'Your design title should be 2-40 characters long.';
+            }
+
+            if( empty( $domain ) ) {
+                $output['message'][] = 'Enter your domain name.';
+            } elseif( !preg_match('/^[0-9]+$/', $domain) ) {
+                $output['message'][] = 'Your domain should be contain only number.';
+            } 
+            
+            if( 'update_design' == $form ) {
+                if( !empty( $file_name ) ) {
+                    if ( ! in_array( $extension, $allowed_extension ) ) {
+                        $output['message'][] = 'Uploaded file type is not allowed. We are currently allowing ' . implode(', ', $allowed_extension )  .' filetype';
+                    } elseif( $file_size > $allowed_file_size ) {
+                        $output['message'][] = 'Your uploaded file size must be less than 5 MB';
+                    }
+                }
+            } else {
+                // Validate file name
+                if( empty( $file_name ) ) {
+                    $output['message'][] = 'Please upload your design file.';
+                } elseif ( ! in_array( $extension, $allowed_extension ) ) {
+                    $output['message'][] = 'Uploaded file type is not allowed. We are currently allowing ' . implode(', ', $allowed_extension )  .' filetype';
+                } elseif( $file_size > $allowed_file_size ) {
+                    $output['message'][] = 'Your uploaded file size must be less than 5 MB';
+                }
+            }
+            
+    
+            if( empty( $output['message'] ) ) {
+                if( 'create_design' == $form ) {
+                    $query = mysqli_query( $mysqli, "INSERT INTO eg_design( design_title, domain_id, design_img ) VALUES( '$design', '$domain', '$new_file_name' ) ");
+                    $message = "Successfully created a new design.";
+                } elseif ( 'update_design' == $form ) {
+                    $sql = "SET design_title = '$design', domain_id = '$domain'";
+                    if( !empty( $file_name ) ) {
+                        $sql .= " ,design_img = '$new_file_name' ";
+                    }
+                    $sql .= " WHERE design_id = '$design_id' ";
+                    $query = mysqli_query( $mysqli, "UPDATE eg_design $sql ");
+                    $message = "Successfully updated the design.";
+                }
+                
+                if( $query ) {
+                    if( !empty( $file_tmp_name ) ) {
+                        if( move_uploaded_file( $file_tmp_name, '../assets/design/'.$new_file_name ) ) {
+                            $output['success'] = true;
+                            $output['message'][] = $message;
+                        } else {
+                            $output['success'] = false;
+                            $output['message'][] = "Opps! something wen't wrong. Design is not uploading...";
+                        }
+                    }
+                    $output['success'] = true;
+                    $output['message'][] = $message;
+                } else {
+                    $output['success'] = false;
+                    $output['message'][] = "Opps! something wen't wrong." .  mysqli_error( $mysqli );
+                }
+            }
+        }
+        echo json_encode($output);
+    }
+}
+
+// delete domain 
 if( isset( $_POST['form']) && $_POST['form'] == 'delete_domain' ) {
 
-    $domain_id = (int) validate( $_POST['domain_id'] );
+    $domain_id = (int) validate( $_POST['delete_id'] );
     // Hold all errors
     $output['message'] = [];
     $output['success'] = false;
@@ -15,11 +121,36 @@ if( isset( $_POST['form']) && $_POST['form'] == 'delete_domain' ) {
     }
 
     if( empty( $output['message'] ) ) {
-        $domain = '@'.$domain;
-        $update = mysqli_query( $mysqli, "DELETE FROM sg_domains WHERE domain_id = '$domain_id' ");
-        if( $update ) {
+        $delete = mysqli_query( $mysqli, "DELETE FROM eg_domains WHERE domain_id = '$domain_id' ");
+        if( $delete ) {
             $output['success'] = true;
             $output['message'][] = "Successfully deleted the domain.";
+        } else {
+            $output['success'] = false;
+            $output['message'][] = "Opps! something wen't wrong.";
+        }
+    }
+    echo json_encode($output);
+}
+
+// delete design 
+if( isset( $_POST['form']) && $_POST['form'] == 'delete_design' ) {
+
+    $design_id = (int) validate( $_POST['delete_id'] );
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = "all-design.php";
+
+    if( empty( $design_id ) ) {
+        $output['message'][] = 'Your design id missing';
+    }
+
+    if( empty( $output['message'] ) ) {
+        $delete = mysqli_query( $mysqli, "DELETE FROM eg_design WHERE design_id = '$design_id' ");
+        if( $delete ) {
+            $output['success'] = true;
+            $output['message'][] = "Successfully deleted the design.";
         } else {
             $output['success'] = false;
             $output['message'][] = "Opps! something wen't wrong.";
@@ -64,7 +195,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
 
         if( empty( $output['message'] ) ) {
             $domain = '@'.$domain;
-            $update = mysqli_query( $mysqli, "UPDATE sg_domains SET domain_name = '$domain', company_name = '$company' WHERE domain_id = '$domain_id' ");
+            $update = mysqli_query( $mysqli, "UPDATE eg_domains SET domain_name = '$domain', company_name = '$company' WHERE domain_id = '$domain_id' ");
             if( $update ) {
                 $output['success'] = true;
                 $output['message'][] = "Successfully udpate the domain.";
@@ -109,7 +240,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
 
         if( empty( $output['message'] ) ) {
             $domain = '@'.$domain;
-            $insert = mysqli_query( $mysqli, "INSERT INTO sg_domains( domain_name, company_name ) VALUES( '$domain', '$company' ) ");
+            $insert = mysqli_query( $mysqli, "INSERT INTO eg_domains( domain_name, company_name ) VALUES( '$domain', '$company' ) ");
             if( $insert ) {
                 $output['success'] = true;
                 $output['message'][] = "Successfully created a new domain.";

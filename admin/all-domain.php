@@ -13,7 +13,7 @@
                     <th>Action</th>
                 </tr>
                 <?php 
-                $get_domain = mysqli_query( $mysqli, "SELECT * FROM sg_domains");
+                $get_domain = mysqli_query( $mysqli, "SELECT * FROM eg_domains");
                 if( mysqli_num_rows( $get_domain) > 0 ) {
 
                     $count = 1;
@@ -25,7 +25,7 @@
                             echo "<td>$count</td>";
                             echo "<td>$domain</td>";
                             echo "<td>$company</td>";
-                            echo "<td><a class='btn btn-success btn-sm' href='edit-domain.php?domain_id=$domain_id'>Edit</a> <a class='btn btn-danger btn-sm' href='delete-domain.php?domain_id=$domain_id'>Delete</a> </td>";
+                            echo "<td><a class='btn btn-success btn-sm' href='edit-domain.php?domain_id=$domain_id'>Edit</a> <a class='btn btn-danger btn-sm delete-btn' data-delete-id='$domain_id' data-form='delete_domain'>Delete</a> </td>";
                         echo "</tr>";
                         $count++;
                     }
