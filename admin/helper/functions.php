@@ -1,7 +1,7 @@
 <?php 
 // base url 
 require_once 'connection.php';
-define('BASE_URL', '' );
+define('BASE_URL', 'http://localhost:8888/freelancer/e-greeting-cards/' );
 
 // Check if user logged in or not
 function check_session() {

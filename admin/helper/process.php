@@ -1,6 +1,93 @@
 <?php 
 require_once 'functions.php';
 
+// Prepare the card and add the text on the card design
+if( isset( $_POST['form']) && $_POST['form'] == 'check_design' ) {
+
+    $name = validate( $_POST['name'] );
+    $email = validate( $_POST['email'] );
+    $domain = validate( $_POST['domain'] );
+
+    $given_fontsize = validate( $_POST['fontsize'] );
+    $given_position_x = validate( $_POST['position_x'] );
+    $given_position_y = validate( $_POST['position_y'] );
+
+    $domain_id = $domain;
+    $get_desing = mysqli_query( $mysqli, "SELECT design_img FROM eg_design WHERE domain_id = '$domain_id' ");
+
+    $errors = [];
+
+    if( empty( $name ) ) {
+        $errors[] = 'Your name is required';
+    } elseif( strlen( $name ) > 50 || strlen( $name ) < 2 ) {
+        $errors[] = 'Your name must be between 2-50 characters long';
+    }
+
+    if( empty( $email ) ) {
+        $errors[] = 'Your email address is required';
+    }
+
+    if( empty( $domain ) ) {
+        $errors[] = 'Please select a domain';
+    } elseif( mysqli_num_rows( $get_desing ) == 0 ) {
+        $errors[] = 'No design found';
+    }
+
+    if( !empty( $errors ) ) {
+        foreach( $errors as $error ) {
+            echo "<div class='alert alert-danger'>$error</div>";
+        }
+    } else {
+        $get_result = mysqli_fetch_array( $get_desing, MYSQLI_ASSOC );
+        $design_img = $get_result['design_img'];
+
+        header('Content-type: image/jpeg');
+        $jpg_image = imagecreatefromjpeg("../assets/design/$design_img");
+        $black = imagecolorallocate($jpg_image, 0, 0, 0);
+        $font_path = '../Fonts/HelveticaNeue-BoldItalic.otf';
+        $text = $name;
+        $font_size = 30;
+        $angle = 0;
+
+        // Get image dimensions
+        $width = imagesx($jpg_image);
+        $height = imagesy($jpg_image);
+        // Get center coordinates of image
+        $centerX = $width / 2;
+        $centerY = $height / 2;
+        // Get size of text
+        list($left, $bottom, $right, , , $top) = imageftbbox($font_size, $angle, $font_path, $text);
+        // Determine offset of text
+        $left_offset = ($right - $left) / 2;
+        $top_offset = ($bottom - $top) / 2;
+        // Generate coordinates
+        $x = $centerX - $left_offset;
+        $y = $centerY + $top_offset;
+
+        // Add text to image
+        if( !empty( $given_fontsize ) ) {
+            $font_size = $given_fontsize;
+        }
+        if( !empty( $given_position_x ) ) {
+            $x = $given_position_x;
+        }
+        if( !empty( $given_position_y ) ) {
+            $y = $given_position_y;
+        }
+
+        imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
+        $time = time();
+        //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
+        imagejpeg($jpg_image, "../assets/design/$time.jpg");
+        imagedestroy($jpg_image);
+            
+        //echo "<img class='img-fluid' src='assets/design/$design_img'>";
+        $url = BASE_URL."admin/assets/design/$time.jpg";
+        echo "<img class='img-fluid' src='$url'>";   
+    }
+}
+
+
 // Create design 
 if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST['form'] == 'update_design' ) ) {
 
@@ -208,7 +295,6 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
     }
 }
 
-
 // Create domain 
 if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
 
@@ -253,9 +339,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
     }
 }
 
-
 // Send email 
-if( isset( $_POST['form']) && $_POST['form'] == 'send_email' ) {
+if( isset( $_POST['form']) && $_POST['form'] == 'send_email___' ) {
 
     $name = validate( $_POST['name'] );
     $email = validate( $_POST['email'] );
