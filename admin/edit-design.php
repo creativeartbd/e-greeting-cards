@@ -16,16 +16,40 @@
             $design_img = $get_result['design_img'];
             $design_created = $get_result['design_created'];
         ?>
-        <div class="col-md-8">
+        <div class="col-md-7">
             <form id="form">
-                <div class="mb-3">
-                    <label for="design_title" class="form-label">Ttile of the design</label>
-                    <input type="text" name="design" value="<?php echo $design_title; ?>" class="form-control" id="design_title">
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="design_title" class="form-label">Ttile of the design</label>
+                            <input type="text" name="design" value="<?php echo $design_title; ?>" class="form-control" id="design_title">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="design" class="form-label">Upload a new design</label>
+                            <input type="file" name="design" class="form-control" id="design">
+                        </div>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label for="design" class="form-label">Upload a new design</label>
-                    <input type="file" name="design" class="form-control" id="design">
+                    <div class="row">
+                        <div class="col">
+                            <label for="fontsize" class="form-label">Enter the font size</label>
+                            <input type="number" name="fontsize" class="form-control" id="fontsize">
+                        </div>
+                        <div class="col">
+                            <label for="position_x" class="form-label">Position X</label>
+                            <input type="number" name="position_x" class="form-control" id="position_x">
+                        </div>
+                        <div class="col">
+                            <label for="position_y" class="form-label">Position Y</label>
+                            <input type="number" name="position_y" class="form-control" id="position_y">
+                        </div>
+                    </div>
                 </div>
+                
+                
                 <div class="mb-3">
                     <label for="domain">Choose a domain</label>
                     <select name="domain" id="domain" class="form-control">
@@ -55,7 +79,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-5">
             <label>Design File</label>
             <img class="img-fluid" src="assets/design/<?php echo $design_img; ?>" alt="">
         </div>

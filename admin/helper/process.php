@@ -2,6 +2,111 @@
 require_once 'functions.php';
 
 // Prepare the card and add the text on the card design
+if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
+   
+    echo '<pre>';
+        //  print_r( $_REQUEST );
+        //  print_r( $_FILES );
+        // print_r( $_SESSION['output_design'] );
+    echo '</pre>';
+
+    $design = validate( $_POST['design'] );
+    $design_font_size = validate( $_POST['design_font_size'] );
+    $design_x = validate( $_POST['design_x'] );
+    $design_y = validate( $_POST['design_y'] );
+    $domain = validate( $_POST['domain'] );
+    $color = validate( $_POST['color'] );
+
+    $domain_id = $domain;
+
+    $file_name = $file_tmp_name = $file_size = $file_type = $extension = '';
+    if( isset( $_FILES['design']['name'] ) ) {
+        $file_name = validate( $_FILES['design']['name'] );
+        $file_tmp_name = validate( $_FILES['design']['tmp_name'] );
+        $file_size = validate( $_FILES['design']['size'] );
+        $file_type = validate( $_FILES['design']['type'] );
+
+        $allowed_extension = [ 'jpg', 'jpeg', 'png' ];
+        $explode = explode( '.', $file_name );
+        $extension = end( $explode );
+    }
+    $allowed_file_size = 5000000; // 5 MB file size allowed
+    $new_file_name = time().'.'.$extension;
+
+    if( empty( $file_name ) ) {
+        echo "<div class='alert alert-warning'>Please upload a design.</div>";
+    } else {
+        // Store generate desing, we will delete it later
+        $_SESSION['output_design'][] = $new_file_name;
+        // Upload the file because we need to show the output right now
+        move_uploaded_file($file_tmp_name, "../assets/design/".$new_file_name);
+    
+        // Start generating image
+        if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
+            header("Content-type: image/jpeg");
+            $jpg_image = imagecreatefromjpeg('../assets/design/'.$new_file_name);
+        } else{
+            header("Content-type: image/png");
+            $jpg_image = imagecreatefrompng('../assets/design/'.$new_file_name);
+        }
+
+        list($r, $g, $b) = sscanf($color, "#%02x%02x%02x");
+
+        $black = imagecolorallocate($jpg_image, $r, $g, $b);
+        $font_path = '../Fonts/HelveticaNeue-BoldItalic.otf';
+        $text = $design;
+        $font_size = 30;
+        $angle = 0;
+
+        // Get image dimensions
+        $width = imagesx($jpg_image);
+        $height = imagesy($jpg_image);
+        // Get center coordinates of image
+        $centerX = $width / 2;
+        $centerY = $height / 2;
+        // Get size of text
+        list($left, $bottom, $right, , , $top) = imageftbbox($font_size, $angle, $font_path, $text);
+        // Determine offset of text
+        $left_offset = ($right - $left) / 2;
+        $top_offset = ($bottom - $top) / 2;
+        // Generate coordinates
+        $x = $centerX - $left_offset;
+        $y = $centerY + $top_offset;
+
+        // Add text to image
+        if( !empty( $design_font_size ) ) {
+            $font_size = $design_font_size;
+        }
+        if( !empty( $design_x ) ) {
+            $x = $design_x;
+        }
+        if( !empty( $design_y ) ) {
+            $y = $design_y;
+        }
+
+        imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
+        $time = time();
+        //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
+        if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
+            imagejpeg($jpg_image, "../assets/design/$new_file_name");
+        } else {
+            imagepng($jpg_image, "../assets/design/$new_file_name");
+        }
+        
+        imagedestroy($jpg_image);
+            
+        $url = BASE_URL."admin/assets/design/$new_file_name";
+        echo "<img class='img-fluid' src='$url'>"; 
+
+        // Delete all generated design except the latest one
+        $total_output_desing = count( $_SESSION['output_design'] ); 
+        for( $x = 0; $x < $total_output_desing - 1; $x++) {
+            @unlink("../assets/design/".$_SESSION['output_design'][$x]);
+        }
+    }
+}
+
+// Prepare the card and add the text on the card design
 if( isset( $_POST['form']) && $_POST['form'] == 'check_design' ) {
 
     $name = validate( $_POST['name'] );
@@ -87,12 +192,14 @@ if( isset( $_POST['form']) && $_POST['form'] == 'check_design' ) {
     }
 }
 
-
 // Create design 
-if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST['form'] == 'update_design' ) ) {
+if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['form'] == 'update_design' ) ) {
 
     $domain = validate( $_POST['domain'] );
     $design = validate( $_POST['design'] );
+    $design_font_size = validate( $_POST['design_font_size'] );
+    $design_x = validate( $_POST['design_x'] );
+    $design_y = validate( $_POST['design_y'] );
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : 0;
     $form = validate( $_POST['form'] );
 
@@ -119,8 +226,8 @@ if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST[
     $new_file_name = time().'.'.$extension;
 
 
-    if( isset( $domain ) && isset( $file_name ) && isset( $design ) ) {
-        if( empty( $domain ) && empty( $file_name ) && empty( $design ) ) {
+    if( isset( $domain ) && isset( $file_name ) && isset( $design ) && isset( $design_font_size ) && isset( $design_x ) && isset( $design_y ) ) {
+        if( empty( $domain ) && empty( $file_name ) && empty( $design ) && empty( $design_font_size ) && empty( $design_x ) && empty( $design_y ) ) {
             $output['message'][] = 'All field is required.';
         } else {
 
@@ -132,12 +239,6 @@ if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST[
                 $output['message'][] = 'Your design title should be 2-40 characters long.';
             }
 
-            if( empty( $domain ) ) {
-                $output['message'][] = 'Enter your domain name.';
-            } elseif( !preg_match('/^[0-9]+$/', $domain) ) {
-                $output['message'][] = 'Your domain should be contain only number.';
-            } 
-            
             if( 'update_design' == $form ) {
                 if( !empty( $file_name ) ) {
                     if ( ! in_array( $extension, $allowed_extension ) ) {
@@ -156,17 +257,52 @@ if( isset( $_POST['form']) && ( $_POST['form'] == 'create_design' ) || ( $_POST[
                     $output['message'][] = 'Your uploaded file size must be less than 5 MB';
                 }
             }
+
+            if( empty( $design_font_size ) ) {
+                $output['message'][] = 'Enter the font size';
+            } elseif( !preg_match('/^[0-9]+$/', $design_font_size) ) {
+                $output['message'][] = 'Font size should be contain only number.';
+            } elseif( $design_font_size > 100 ) {
+                $output['message'][] = 'Font size must be less than 100px';
+            }
+
+            if( empty( $design_x ) ) {
+                $output['message'][] = 'Enter the design X axios value';
+            } elseif( !preg_match('/^[0-9]+$/', $design_x) ) {
+                $output['message'][] = 'X axios value should be contain only number.';
+            } elseif( $design_x > 1000 ) {
+                $output['message'][] = 'X axios value must be less than 1000px';
+            }
+
+            if( empty( $design_y ) ) {
+                $output['message'][] = 'Enter the design Y axios value';
+            } elseif( !preg_match('/^[0-9]+$/', $design_y) ) {
+                $output['message'][] = 'Y axios value should be contain only number.';
+            } elseif( $design_y > 2500 ) {
+                $output['message'][] = 'Y axios value must be less than 2500px';
+            }
             
-    
+            if( empty( $domain ) ) {
+                $output['message'][] = 'Enter your domain name.';
+            } elseif( !preg_match('/^[0-9]+$/', $domain) ) {
+                $output['message'][] = 'Your domain should be contain only number.';
+            } 
+            
             if( empty( $output['message'] ) ) {
+
                 if( 'create_design' == $form ) {
-                    $query = mysqli_query( $mysqli, "INSERT INTO eg_design( design_title, domain_id, design_img ) VALUES( '$design', '$domain', '$new_file_name' ) ");
+
+                    $query = mysqli_query( $mysqli, "INSERT INTO eg_design( design_title, domain_id, design_img, design_font_size, design_x, design_y ) VALUES( '$design', '$domain', '$new_file_name', '$design_font_size', '$design_x', '$design_y' ) ");
                     $message = "Successfully created a new design.";
+
                 } elseif ( 'update_design' == $form ) {
-                    $sql = "SET design_title = '$design', domain_id = '$domain'";
+
+                    $sql = "SET design_title = '$design', domain_id = '$domain', design_font_size = '$design_font_size', design_x = '$design_x', design_y = '$design_y'  ";
+
                     if( !empty( $file_name ) ) {
                         $sql .= " ,design_img = '$new_file_name' ";
                     }
+
                     $sql .= " WHERE design_id = '$design_id' ";
                     $query = mysqli_query( $mysqli, "UPDATE eg_design $sql ");
                     $message = "Successfully updated the design.";
