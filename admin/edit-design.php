@@ -12,6 +12,10 @@
             $design_id = $get_result['design_id'];
             $design_title = $get_result['design_title'];
             $domain_name = $get_result['domain_name'];
+            $design_font_size = $get_result['design_font_size'];
+            $design_x = $get_result['design_x'];
+            $design_y = $get_result['design_y'];
+            $color = $get_result['color'];
             $ex_domain_id = $get_result['domain_id'];
             $design_img = $get_result['design_img'];
             $design_created = $get_result['design_created'];
@@ -35,16 +39,20 @@
                 <div class="mb-3">
                     <div class="row">
                         <div class="col">
-                            <label for="fontsize" class="form-label">Enter the font size</label>
-                            <input type="number" name="fontsize" class="form-control" id="fontsize">
+                            <label for="fontsize" class="form-label">Font size</label>
+                            <input type="number" name="fontsize" class="form-control" id="fontsize" value="<?php echo $design_font_size; ?>">
                         </div>
                         <div class="col">
-                            <label for="position_x" class="form-label">Position X</label>
-                            <input type="number" name="position_x" class="form-control" id="position_x">
+                            <label for="design_x" class="form-label">Position X</label>
+                            <input type="number" name="design_x" class="form-control" id="design_x" value="<?php echo $design_x; ?>">
                         </div>
                         <div class="col">
-                            <label for="position_y" class="form-label">Position Y</label>
-                            <input type="number" name="position_y" class="form-control" id="position_y">
+                            <label for="design_y" class="form-label">Position Y</label>
+                            <input type="number" name="design_y" class="form-control" id="design_y" value="<?php echo $design_y; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="color" class="form-label">Color</label>
+                            <input type="color" name="color" class="form-control" id="color" value="<?php echo $color; ?>">
                         </div>
                     </div>
                 </div>
@@ -71,7 +79,8 @@
                         ?>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Update Design</button>
+                <button type="button" class="btn btn-primary ajax-btn output-desing" data-form="edit_output_design">Output Design</button>
+                <button type="submit" class="btn btn-success">Save Design</button>
                 <div class="mt-3">
                     <div class="result"></div>
                     <input type="hidden" name="design_id" value="<?php echo $design_id; ?>">
@@ -80,8 +89,10 @@
             </form>
         </div>
         <div class="col-md-5">
-            <label>Design File</label>
-            <img class="img-fluid" src="assets/design/<?php echo $design_img; ?>" alt="">
+            <h4>Design Output</h4>
+            <div class="output-design"></div>
+            <!-- <h4>Actual Design</h4>
+            <img class="img-fluid" src="assets/design/<?php echo $design_img; ?>" alt=""> -->
         </div>
         <?php endif; ?>
     </div>

@@ -6,6 +6,7 @@
         </div>
         <div class="col-md-7">
             <form id="form" enctype="multipart/form-data">
+                <div class="alert alert-warning">Note: If you leave the X and Y axios then the text will be on the center position.</div>
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
@@ -23,8 +24,8 @@
                 <div class="mb-3">
                     <div class="row">
                         <div class="col">
-                            <label for="fontsize" class="form-label">Enter the font size</label>
-                            <input type="number" name="design_font_size" class="form-control" id="fontsize">
+                            <label for="fontsize" class="form-label">Font size</label>
+                            <input type="number" name="fontsize" class="form-control" id="fontsize">
                         </div>
                         <div class="col">
                             <label for="position_x" class="form-label">Position X</label>
@@ -61,11 +62,12 @@
                 <button type="submit" class="btn btn-success ajax-btn">Save Design</button>
                 <div class="mt-3">
                     <div class="result"></div>
+                    <input type="hidden" name="form" value="create_design">
                 </div>
             </form>
         </div>
         <div class="col-md-5">
-            <h4>Design Output</h4>
+            <h4>Output Design</h4>
             <div class="output-design"></div>
         </div>
     </div>

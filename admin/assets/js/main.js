@@ -22,6 +22,7 @@
                     $(".output-design").val("Please wait...");
                 },
                 success: function (data) {
+                    //$(".output-design").html("");
                     $(".output-design").html(data);
                 }
             });
@@ -106,11 +107,11 @@
                 contentType: false,
                 beforeSend: function () {
                     $(".ajax-btn").val("Please wait...");
-                    $(".ajax-btn").prop("disabled", true);
+                    // $(".ajax-btn").prop("disabled", true);
                 },
                 success: function (data) {
                     console.log(btn_level);
-                    $(".ajax-btn").prop("disabled", false);
+                    // $(".ajax-btn").prop("disabled", false);
                     $(".ajax-btn").val(btn_level);
                     var messages = data.message;
                     $(".result").html('');
