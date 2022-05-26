@@ -16,7 +16,7 @@
                     <th>Action</th>
                 </tr>
                 <?php 
-                $get_design = mysqli_query( $mysqli, "SELECT ds.*, do.domain_name FROM eg_design AS ds LEFT JOIN eg_domains AS do ON ds.domain_id = do.domain_id ");
+                $get_design = mysqli_query( $mysqli, "SELECT ed.*, edo.domain_name FROM eg_design AS ed LEFT JOIN eg_domains AS edo ON ed.domain_id = edo.domain_id ");
                 if( mysqli_num_rows( $get_design) > 0 ) {
 
                     $count = 1;

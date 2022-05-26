@@ -5,8 +5,8 @@
             <h2>Upload Design</h2>
         </div>
         <div class="col-md-7">
+            <div class="alert alert-warning">Its better to first check the output by pressing on the "Output Design" button. After that you can save the desgin.</div>
             <form id="form" enctype="multipart/form-data">
-                <div class="alert alert-warning">Note: If you leave the X and Y axios then the text will be on the center position.</div>
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
@@ -22,6 +22,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <h5>Title Settings</h5><hr>
                     <div class="row">
                         <div class="col">
                             <label for="fontsize" class="form-label">Font size</label>
@@ -38,6 +39,27 @@
                         <div class="col">
                             <label for="color" class="form-label">Font Color</label>
                             <input type="color" name="color" class="form-control" id="color">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h5>Domain Settings</h5><hr>
+                    <div class="row">
+                        <div class="col">
+                            <label for="d_fontsize" class="form-label">Font size</label>
+                            <input type="number" name="d_fontsize" class="form-control" id="d_fontsize" value="<?php echo $d_design_font_size; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_design_x" class="form-label">Position X</label>
+                            <input type="number" name="d_design_x" class="form-control" id="d_design_x" value="<?php echo $d_design_x; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_design_y" class="form-label">Position Y</label>
+                            <input type="number" name="d_design_y" class="form-control" id="d_design_y" value="<?php echo $d_design_y; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_color" class="form-label">Color</label>
+                            <input type="color" name="d_color" class="form-control" id="d_color" value="<?php echo $d_color; ?>">
                         </div>
                     </div>
                 </div>
@@ -59,7 +81,7 @@
                     </select>
                 </div>
                 <button type="button" class="btn btn-primary ajax-btn output-desing" data-form="output_design">Output Design</button>
-                <button type="submit" class="btn btn-success ajax-btn">Save Design</button>
+                <button type="submit" class="btn btn-success ajax-btn">Upload Design</button>
                 <div class="mt-3">
                     <div class="result"></div>
                     <input type="hidden" name="form" value="create_design">

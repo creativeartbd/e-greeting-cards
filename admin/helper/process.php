@@ -6,14 +6,23 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
     
     $design = validate( $_POST['design'] );
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : '';
+    
+    // Design settings
     $design_font_size = validate( $_POST['fontsize'] );
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
     $domain = validate( $_POST['domain'] );
     $color = validate( $_POST['color'] );
+    // Domain settings
+    $d_design_font_size = validate( $_POST['d_fontsize'] );
+    $d_design_x = validate( $_POST['d_design_x'] );
+    $d_design_y = validate( $_POST['d_design_y'] );
+    $d_color = validate( $_POST['d_color'] );
+    
+
     $domain_id = $domain;
 
-    $get_desing = mysqli_query( $mysqli, "SELECT design_img FROM eg_design WHERE design_id = '$design_id' ");
+    $get_desing = mysqli_query( $mysqli, "SELECT eg_design.design_img, eg_domains.domain_name FROM eg_design LEFT JOIN eg_domains ON eg_design.domain_id = eg_domains.domain_id WHERE eg_design.design_id = '$design_id' ");
     $found_design = mysqli_num_rows( $get_desing );
 
     $allowed_extension = [ 'jpg', 'jpeg', 'png' ];
@@ -23,14 +32,14 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
     if( $found_design > 0 ) {
         $get_result = mysqli_fetch_array( $get_desing, MYSQLI_ASSOC );
         $design_img = $get_result['design_img'];
+        $domain_name = $get_result['domain_name'];
         $explode = explode( '.', $design_img );
         $extension = $explode[1];
         $new_file_name = $design_img;
 
         $new_file_name = time().'.'.$extension;
         rename( "../assets/design/".$design_img, "../assets/design/".$new_file_name);
-    $update = mysqli_query( $mysqli, "UPDATE eg_design SET design_img = '$new_file_name' WHERE design_id = '$design_id' ");
-
+        $update = mysqli_query( $mysqli, "UPDATE eg_design SET design_img = '$new_file_name' WHERE design_id = '$design_id' ");
     }
 
     if( isset( $_FILES['design']['name'] ) && ! empty( $_FILES['design']['name']) ) {
@@ -79,8 +88,11 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         
 
         list($r, $g, $b) = sscanf($color, "#%02x%02x%02x");
+        list($d_r, $d_g, $d_b) = sscanf($d_color, "#%02x%02x%02x");
 
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
+        $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
+        
         $font_path = '../Fonts/alfont_com_هلفيتيكا-عربي-.ttf';
         $text = $design;
         $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
@@ -103,6 +115,10 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $x = $centerX - $left_offset;
         $y = $centerY + $top_offset;
 
+        $d_font_size = 30;
+        $d_x = $x;
+        $d_y = $height - 200;
+
         // Add text to image
         if( !empty( $design_font_size ) ) {
             $font_size = $design_font_size;
@@ -114,7 +130,18 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
             $y = $design_y;
         }
 
+        if( !empty( $d_font_size ) ) {
+            $d_font_size = $d_design_font_size;
+        }
+        if( !empty( $d_design_x ) ) {
+            $d_x = $d_design_x;
+        }
+        if( !empty( $d_design_y ) ) {
+            $d_y = $d_design_y;
+        }
+
         imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
+        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $font_path, $domain_name);
 
         if( isset( $_FILES['design']['name'] ) && ! empty( $_FILES['design']['name']) ) {
             if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
@@ -145,10 +172,17 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
 
     $domain = isset( $_POST['domain'] ) ? validate( $_POST['domain'] ) : '';
     $design = isset( $_POST['domain'] ) ? validate( $_POST['design'] ) : '';
+    // Title settings
     $design_font_size = isset( $_POST['domain'] ) ? validate( $_POST['fontsize'] )  : 30;
     $design_x = isset( $_POST['domain'] ) ? validate( $_POST['design_x'] ) : '';
     $design_y = isset( $_POST['domain'] ) ? validate( $_POST['design_y'] ) : '';
     $color = isset( $_POST['domain'] ) ? validate( $_POST['color'] ) : '#000000';
+    // Domain settings
+    $d_design_font_size = isset( $_POST['d_fontsize'] ) ? validate( $_POST['d_fontsize'] )  : 30;
+    $d_design_x = isset( $_POST['d_design_x'] ) ? validate( $_POST['d_design_x'] ) : '';
+    $d_design_y = isset( $_POST['d_design_y'] ) ? validate( $_POST['d_design_y'] ) : '';
+    $d_color = isset( $_POST['d_color'] ) ? validate( $_POST['d_color'] ) : '#000000';
+
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : 0;
     $form = isset( $_POST['domain'] ) ? validate( $_POST['form'] ) : '';
 
@@ -207,32 +241,62 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 }
             }
 
-            if( ! empty( $design_font_size ) ) {
-                if( !preg_match('/^[0-9]+$/', $design_font_size) ) {
-                    $output['message'][] = 'Font size should be contain only number.';
-                } elseif( $design_font_size > 100 ) {
-                    $output['message'][] = 'Font size must be less than 100px';
-                }
+            // Title Settings validation
+            if( empty( $design_font_size ) ) {
+                $output['message'][] = 'Title font size is reuquired.';
+            } elseif( !preg_match('/^[0-9]+$/', $design_font_size) ) {
+                $output['message'][] = 'Font size should be contain only number.';
+            } elseif( $design_font_size > 100 ) {
+                $output['message'][] = 'Font size must be less than 100px';
             }
 
-            if( !empty( $design_x ) ) {
-                if( !preg_match('/^[0-9]+$/', $design_x) ) {
-                    $output['message'][] = 'X axios value should be contain only number.';
-                } elseif( $design_x > 1000 ) {
-                    $output['message'][] = 'X axios value must be less than 1000px';
-                } 
+            if( empty( $design_x ) ) {
+                $output['message'][] = 'Title X axios is required.';
+            } elseif( !preg_match('/^[0-9]+$/', $design_x) ) {
+                $output['message'][] = 'Title X axios value should be contain only number.';
+            } elseif( $design_x > 1000 ) {
+                $output['message'][] = 'Tille X axios value must be less than 1000px';
             } 
-
-            if( ! empty( $design_y ) ) {
-                if( !preg_match('/^[0-9]+$/', $design_y) ) {
-                    $output['message'][] = 'Y axios value should be contain only number.';
-                } elseif( $design_y > 2500 ) {
-                    $output['message'][] = 'Y axios value must be less than 2500px';
-                }
+            
+            if( empty( $design_y ) ) {
+                $output['message'][] = 'Title Y axios is required.';
+            }elseif( !preg_match('/^[0-9]+$/', $design_y) ) {
+                $output['message'][] = 'Title Y axios value should be contain only number.';
+            } elseif( $design_y > 2500 ) {
+                $output['message'][] = 'Title Y axios value must be less than 2500px';
             }
 
             if( empty( $color ) ) {
-                $output['message'][] = 'Please choose a font color';
+                $output['message'][] = 'Title color is required';
+            }
+
+            // Domain Settings validation
+            if( empty( $d_design_font_size ) ) {
+                $output['message'][] = 'Domain font size is reuquired.';
+            } elseif( !preg_match('/^[0-9]+$/', $d_design_font_size) ) {
+                $output['message'][] = 'Domain size should be contain only number.';
+            } elseif( $d_design_font_size > 100 ) {
+                $output['message'][] = 'Domain size must be less than 100px';
+            }
+
+            if( empty( $d_design_x ) ) {
+                $output['message'][] = 'Domain X axios is required.';
+            } elseif( !preg_match('/^[0-9]+$/', $d_design_x) ) {
+                $output['message'][] = 'Domain X axios value should be contain only number.';
+            } elseif( $d_design_x > 1000 ) {
+                $output['message'][] = 'Domain X axios value must be less than 1000px';
+            } 
+            
+            if( empty( $d_design_y ) ) {
+                $output['message'][] = 'Domain Y axios is required.';
+            }elseif( !preg_match('/^[0-9]+$/', $d_design_y) ) {
+                $output['message'][] = 'Domain Y axios value should be contain only number.';
+            } elseif( $d_design_y > 2500 ) {
+                $output['message'][] = 'Domain Y axios value must be less than 2500px';
+            }
+
+            if( empty( $d_color ) ) {
+                $output['message'][] = 'Domain color is required';
             }
 
             if( empty( $domain ) ) {
@@ -252,23 +316,20 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 if( 'create_design' == $form ) {
     
                     $columns = [
+                        'design_img' => "'$new_file_name'",
                         'design_title' => "'$design'",
                         'domain_id' => "'$domain'",
-                        'design_img' => "'$new_file_name'",
-                        'color' => "'$color'"
+                        
+                        'color' => "'$color'",
+                        'design_font_size' => "'$design_font_size'",
+                        'design_x' => "'$design_x'",
+                        'design_y' => "'$design_y'",
+
+                        'd_color' => "'$d_color'",
+                        'd_design_font_size' => "'$d_design_font_size'",
+                        'd_design_x' => "'$d_design_x'",
+                        'd_design_y' => "'$d_design_y'",
                     ];
-
-                    if( ! empty( $design_x ) ) {
-                        $columns['design_font_size'] = "'$design_font_size'";
-                    }
-
-                    if( ! empty( $design_x ) ) {
-                        $columns['design_x'] = "'$design_x'";
-                    }
-
-                    if( ! empty( $design_y ) ) {
-                        $columns['design_y'] = "'$design_y'";
-                    }
 
                     $key = array_keys( $columns );
                     $value = array_values( $columns );
@@ -285,21 +346,19 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                     $columns = [
                         'design_title' => "'$design'",
                         'domain_id' => "'$domain'",
-                        'color' => "'$color'"
+                        
+                        'color' => "'$color'",
+                        'design_font_size' => "'$design_font_size'",
+                        'design_x' => "'$design_x'",
+                        'design_y' => "'$design_y'",
+
+                        'd_color' => "'$d_color'",
+                        'd_design_font_size' => "'$d_design_font_size'",
+                        'd_design_x' => "'$d_design_x'",
+                        'd_design_y' => "'$d_design_y'",
                     ];
 
-                    if( ! empty( $design_font_size ) ) {
-                        $columns['design_font_size'] = "'$design_font_size'";
-                    }
-
-                    if( ! empty( $design_x ) ) {
-                        $columns['design_x'] = "'$design_x'";
-                    }
-
-                    if( ! empty( $design_y ) ) {
-                        $columns['design_y'] = "'$design_y'";
-                    }
-
+                    
                     if( !empty( $file_name ) ) {
                         $columns['design_img'] = "'$new_file_name'";
                     }
@@ -311,15 +370,18 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
 
                     $implode = implode (', ', $prepared_sql );
 
+                    
+                    $sql = "UPDATE eg_design SET ";
+                    $sql .= " $implode";
+                    $sql .= " WHERE design_id = '$design_id' ";
+
                     // echo '<pre>';
                         
-                    //      print_r( $implode );
+                    //      print_r( $sql );
                     // echo '</pre>';
                     // die();
-
-                    $sql = " SET $implode";
-                    $sql .= " WHERE design_id = '$design_id' ";
-                    $query = mysqli_query( $mysqli, "UPDATE eg_design $sql ");
+                    
+                    $query = mysqli_query( $mysqli, $sql);
                     $message = "Successfully updated the design.";
                 }
                 
@@ -343,10 +405,10 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 }
 
                 // Delete all generated design except the latest one
-                $total_output_desing = count( $_SESSION['output_design'] ); 
-                for( $x = 0; $x < $total_output_desing - 1; $x++) {
-                    @unlink("../assets/design/sample/".$_SESSION['output_design'][$x]);
-                } 
+                // $total_output_desing = count( $_SESSION['output_design'] ); 
+                // for( $x = 0; $x < $total_output_desing - 1; $x++) {
+                //     @unlink("../assets/design/sample/".$_SESSION['output_design'][$x]);
+                // } 
             }
         }
         echo json_encode($output);
@@ -357,15 +419,21 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
 if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
 
     $design = validate( $_POST['design'] );
+    $domain = validate( $_POST['domain'] );
+
     $design_font_size = validate( $_POST['fontsize'] );
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
-    $domain = validate( $_POST['domain'] );
     $color = validate( $_POST['color'] );
-    $domain_id = $domain;
-    
 
+    $d_design_font_size = validate( $_POST['d_fontsize'] );
+    $d_design_x = validate( $_POST['d_design_x'] );
+    $d_design_y = validate( $_POST['d_design_y'] );
+    $d_color = validate( $_POST['d_color'] );
+
+    $domain_id = $domain;
     $file_name = $file_tmp_name = $file_size = $file_type = $extension = '';
+
     if( isset( $_FILES['design']['name'] ) ) {
         $file_name = validate( $_FILES['design']['name'] );
         $file_tmp_name = validate( $_FILES['design']['tmp_name'] );
@@ -376,6 +444,15 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $explode = explode( '.', $file_name );
         $extension = end( $explode );
     }
+
+    $get_domain_name = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_id = '$domain_id' ");
+    $found_domain = mysqli_num_rows( $get_domain_name );
+    $domain_name = '';
+    if( $found_domain > 0 ) {
+        $get_domain_result = mysqli_fetch_array( $get_domain_name );
+        $domain_name = $get_domain_result['domain_name'];
+    }
+
     $allowed_file_size = 5000000; // 5 MB file size allowed
     $new_file_name = time().'.'.$extension;
 
@@ -385,23 +462,28 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         echo "<div class='alert alert-danger'>Please upload a design.</div>";
     } elseif( ! in_array( $extension, $allowed_extension ) ) {
         echo "<div class='alert alert-danger'>Only JPG and PNG image is allowed.</div>";
+    } elseif( $found_domain == 0 ) {
+        echo "<div class='alert alert-danger'>Domain name is not found. </div>";
     } else {
         // Store generate desing, we will delete it later
         $_SESSION['output_design'][] = $new_file_name;
         // Upload the file because we need to show the output right now
-        move_uploaded_file($file_tmp_name, "../assets/design/".$new_file_name);
+        move_uploaded_file($file_tmp_name, "../assets/design/sample/".$new_file_name);
         // Start generating image
         if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
             header("Content-type: image/jpeg, charset=utf-8");
-            $jpg_image = imagecreatefromjpeg('../assets/design/'.$new_file_name);
+            $jpg_image = imagecreatefromjpeg('../assets/design/sample/'.$new_file_name);
         } else{
             header("Content-type: image/png, charset=utf-8");
-            $jpg_image = imagecreatefrompng('../assets/design/'.$new_file_name);
+            $jpg_image = imagecreatefrompng('../assets/design/sample/'.$new_file_name);
         }
 
         list($r, $g, $b) = sscanf($color, "#%02x%02x%02x");
+        list($d_r, $d_g, $d_b) = sscanf($d_color, "#%02x%02x%02x");
 
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
+        $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
+
         $font_path = '../Fonts/alfont_com_هلفيتيكا-عربي-.ttf';
         $text = $design;
         $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
@@ -421,39 +503,64 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $left_offset = ($right - $left) / 2;
         $top_offset = ($bottom - $top) / 2;
         // Generate coordinates
-        $x = $centerX - $left_offset;
-        $y = $centerY + $top_offset;
+        $x = $d_x = $centerX - $left_offset;
+        $y = $d_y = $centerY + $top_offset;
 
         // Add text to image
         if( !empty( $design_font_size ) ) {
             $font_size = $design_font_size;
         }
+
+        // Set horizonal position of title
         if( !empty( $design_x ) ) {
             $x = $design_x;
         }
+        if( $x > $width ) {
+            $x = $design_x;
+        }
+        // Set vettical position of title
         if( !empty( $design_y ) ) {
             $y = $design_y;
         }
+        if( $y > $height ) {
+            $y = $height - 20;
+        }
+
+        // Add text to image
+        if( !empty( $d_design_font_size ) ) {
+            $d_font_size = $d_design_font_size;
+        }
+
+        // Set horizonal position of domain name
+        if( !empty( $d_design_x ) ) {
+            $d_x = $d_design_x;
+        }
+        if( $d_x > $width ) {
+            $d_x = $d_design_x;
+        }
+        // Set vettical position of domain name
+        if( !empty( $d_design_y ) ) {
+            $d_y = $d_design_y;
+        }
+        if( $d_y > $height ) {
+            $d_y = $height - 20;
+        }
+        
 
         imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
+        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $font_path, $domain_name);
 
         //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
         if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
-            imagejpeg($jpg_image, "../assets/design/".$new_file_name);
+            imagejpeg($jpg_image, "../assets/design/sample/".$new_file_name);
         } else {
-            imagepng($jpg_image, "../assets/design/".$new_file_name);
+            imagepng($jpg_image, "../assets/design/sample/".$new_file_name);
         }
         
         imagedestroy($jpg_image);
             
-        $url = BASE_URL."admin/assets/design/".$new_file_name;
+        $url = BASE_URL."admin/assets/design/sample/".$new_file_name;
         echo "<img class='img-fluid' src='$url'>"; 
-
-        // Delete all generated design except the latest one
-        $total_output_desing = count( $_SESSION['output_design'] ); 
-        for( $x = 0; $x < $total_output_desing - 1; $x++) {
-            @unlink("../assets/design/".$_SESSION['output_design'][$x]);
-        } 
     }
 }
 

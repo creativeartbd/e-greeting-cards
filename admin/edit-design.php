@@ -12,10 +12,17 @@
             $design_id = $get_result['design_id'];
             $design_title = $get_result['design_title'];
             $domain_name = $get_result['domain_name'];
+            
             $design_font_size = $get_result['design_font_size'];
             $design_x = $get_result['design_x'];
             $design_y = $get_result['design_y'];
             $color = $get_result['color'];
+
+            $d_design_font_size = $get_result['d_design_font_size'];
+            $d_design_x = $get_result['d_design_x'];
+            $d_design_y = $get_result['d_design_y'];
+            $d_color = $get_result['d_color'];
+
             $ex_domain_id = $get_result['domain_id'];
             $design_img = $get_result['design_img'];
             $design_created = $get_result['design_created'];
@@ -37,6 +44,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
+                    <h5>Title Settings</h5><hr>
                     <div class="row">
                         <div class="col">
                             <label for="fontsize" class="form-label">Font size</label>
@@ -53,6 +61,27 @@
                         <div class="col">
                             <label for="color" class="form-label">Color</label>
                             <input type="color" name="color" class="form-control" id="color" value="<?php echo $color; ?>">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h5>Domain Settings</h5><hr>
+                    <div class="row">
+                        <div class="col">
+                            <label for="d_fontsize" class="form-label">Font size</label>
+                            <input type="number" name="d_fontsize" class="form-control" id="d_fontsize" value="<?php echo $d_design_font_size; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_design_x" class="form-label">Position X</label>
+                            <input type="number" name="d_design_x" class="form-control" id="d_design_x" value="<?php echo $d_design_x; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_design_y" class="form-label">Position Y</label>
+                            <input type="number" name="d_design_y" class="form-control" id="d_design_y" value="<?php echo $d_design_y; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="d_color" class="form-label">Color</label>
+                            <input type="color" name="d_color" class="form-control" id="d_color" value="<?php echo $d_color; ?>">
                         </div>
                     </div>
                 </div>

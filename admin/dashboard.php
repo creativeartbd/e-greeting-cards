@@ -13,22 +13,6 @@
                 <div class="mb-3">
                     <div class="row">
                         <div class="col">
-                            <label for="fontsize" class="form-label">Enter the font size</label>
-                            <input type="number" name="fontsize" class="form-control" id="fontsize">
-                        </div>
-                        <div class="col">
-                            <label for="position_x" class="form-label">Position X</label>
-                            <input type="number" name="position_x" class="form-control" id="position_x">
-                        </div>
-                        <div class="col">
-                            <label for="position_y" class="form-label">Position Y</label>
-                            <input type="number" name="position_y" class="form-control" id="position_y">
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="row">
-                        <div class="col">
                             <label for="name" class="form-label">Enter your email address</label>
                             <input type="text" name="email" class="form-control" id="email">
                         </div>
@@ -51,7 +35,6 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Check Design</button>
                 <button type="button" class="btn btn-success">Send Email</button>
                 <div class="mt-3">
                     <div class="result"></div>
