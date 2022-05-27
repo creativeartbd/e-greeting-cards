@@ -726,7 +726,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
 
         if( empty( $company ) ) {
             $output['message'][] = 'Enter your company name.';
-        } elseif( !preg_match('/^[a-zA-Z]+$/', $company) ) {
+        } elseif( !preg_match('/^[a-zA-Z ]+$/', $company) ) {
             $output['message'][] = 'Your company name should be contain only characters.';
         } elseif( strlen( $company) > 40 || strlen( $company ) < 2 ) {
             $output['message'][] = 'Your company should be 2-40 characters long.';
@@ -737,7 +737,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
         }
 
         if( empty( $output['message'] ) ) {
-            $domain = '@'.$domain;
+           
             $update = mysqli_query( $mysqli, "UPDATE eg_domains SET domain_name = '$domain', company_name = '$company' WHERE domain_id = '$domain_id' ");
             if( $update ) {
                 $output['success'] = true;
@@ -781,7 +781,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
         }
 
         if( empty( $output['message'] ) ) {
-            $domain = '@'.$domain;
+
             $insert = mysqli_query( $mysqli, "INSERT INTO eg_domains( domain_name, company_name ) VALUES( '$domain', '$company' ) ");
             if( $insert ) {
                 $output['success'] = true;
@@ -796,18 +796,18 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
 }
 
 // Send email 
-if( isset( $_POST['form']) && $_POST['form'] == 'send_email___' ) {
+if( isset( $_POST['form']) && $_POST['form'] == 'send_email' ) {
 
     $name = validate( $_POST['name'] );
     $email = validate( $_POST['email'] );
     $domain = validate( $_POST['domain'] );
 
-    $generate_email = $email.$domain;
+    $generate_email = $email;
 
     // Hold all errors
     $output['message'] = [];
     $output['success'] = false;
-    $output['redirect'] = "sending-email.php?email=$generate_email&name=$name";
+    $output['redirect'] = "sending-email.php?email=$generate_email&name=$name&domain=$domain";
 
     if( isset( $name) && isset( $email ) && isset( $domain ) ) {
         if( empty( $name ) && empty( $email ) && empty( $domain ) ) {
@@ -822,13 +822,13 @@ if( isset( $_POST['form']) && $_POST['form'] == 'send_email___' ) {
                 $output['message'][] = 'Your name should be contain only characters.';
             } 
             // validate email but not actual email
+            // validate email
             if( empty( $email ) ) {
-                $output['message'][] = 'Your email address';
-            } elseif( strlen( $email) > 40 || strlen( $email ) < 2 ) {
-                $output['message'][] = 'Your email address should be between 2-40 characters long.';
-            } elseif( !preg_match('/^[a-zA-Z \d]+$/', $email) ) {
-                $output['message'][] = 'Your email address should be contain only characters.';
+                $output['message'][] = 'Email address is required.';
+            } elseif( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+                $output['message'][] = 'Email address is not correct';
             }
+            
             // validate domain
             if( empty( $domain ) ) {
                 $output['message'][] = 'Please select a domain';

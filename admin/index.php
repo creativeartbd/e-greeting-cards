@@ -1,5 +1,9 @@
 <?php 
 require_once 'helper/connection.php';
+if( isset( $_SESSION['username'] ) && !empty( $_SESSION['username'] ) ) {
+    header("location:dashboard.php");
+    exit();
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,12 +12,13 @@ require_once 'helper/connection.php';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <title>Admin Panel</title>
 </head>
 <body>
 <div class="container">
     <div class="row">
-        <div class="col-sm-4 mx-auto border pt-5 pb-2 mt-5">
+        <div class="col-sm-4 mx-auto border p-5 mt-5">
             <h2>Admin Panel</h2>
             <p>Please enter your username and password to access the admin panel.</p>
             <form id="form">

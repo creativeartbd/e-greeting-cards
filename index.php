@@ -1,10 +1,12 @@
 <?php require_once 'header.php'; ?>
 <div class="container">
     <div class="row">
-        <div class="col-sm-12 mt-5">
-            <h2>Send Email</h2>
+        <div class="col-sm-6 mt-5 mx-auto">
+            <h2>Send Greeting Card</h2>
         </div>
-        <div class="col-md-7">
+    </div>
+    <div class="row">
+        <div class="col-md-6 mx-auto">
             <form id="form">
                 <div class="mb-3">
                     <label for="name" class="form-label">Please write your full name</label>
@@ -35,16 +37,13 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success">Send Email!</button>
+                <button type="submit" class="btn btn-gradient-primary ajax-btn">Send Email</button>
                 <div class="mt-3">
                     <div class="result"></div>
                     <input type="hidden" name="form" value="send_email">
                 </div>
             </form>
         </div>
-        <div class="col-md-5">
-            <div class="result_design"></div>
-        </div>
     </div>
 </div>
-<?php require_once 'footer.php'; ?> 
+<?php require_once 'footer.php'; ?>
