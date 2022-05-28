@@ -366,11 +366,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                         'design_font_size' => "'$design_font_size'",
                         'design_x' => "'$design_x'",
                         'design_y' => "'$design_y'",
+                        'design_font' => "'$design_font'",
 
                         'd_color' => "'$d_color'",
                         'd_design_font_size' => "'$d_design_font_size'",
                         'd_design_x' => "'$d_design_x'",
                         'd_design_y' => "'$d_design_y'",
+                        'domain_font' => "'$domain_font'",
                     ];
 
                     

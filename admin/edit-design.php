@@ -17,11 +17,13 @@
             $design_x = $get_result['design_x'];
             $design_y = $get_result['design_y'];
             $color = $get_result['color'];
+            $design_font = $get_result['design_font'];
 
             $d_design_font_size = $get_result['d_design_font_size'];
             $d_design_x = $get_result['d_design_x'];
             $d_design_y = $get_result['d_design_y'];
             $d_color = $get_result['d_color'];
+            $domain_font = $get_result['domain_font'];
 
             $ex_domain_id = $get_result['domain_id'];
             $design_img = $get_result['design_img'];
@@ -62,6 +64,29 @@
                             <label for="color" class="form-label">Color</label>
                             <input type="color" name="color" class="form-control" id="color" value="<?php echo $color; ?>">
                         </div>
+                        <div class="col">
+                            <label for="design_font" class="form-label">Design Font Name</label>
+                            <select  name="design_font" class="form-control" id="design_font">
+                                <?php 
+                                $fontpath = "Fonts";
+
+                                if ( !is_dir( $fontpath ) ) {
+                                    exit('Invalid diretory path');
+                                }
+
+                                $files = array();
+                                foreach ( scandir( $fontpath ) as $file ) {
+                                    if ( $file !== '.' && $file !== '..' ) {
+                                        $selected = '';
+                                        if( $file == $design_font ) {
+                                            $selected = 'selected';
+                                        }
+                                        echo "<option $selected value='$file'>".str_replace( '-', ' ', $file )."</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -82,6 +107,29 @@
                         <div class="col">
                             <label for="d_color" class="form-label">Color</label>
                             <input type="color" name="d_color" class="form-control" id="d_color" value="<?php echo $d_color; ?>">
+                        </div>
+                        <div class="col">
+                            <label for="domain_font" class="form-label">Domain Font Name</label>
+                            <select  name="domain_font" class="form-control" id="domain_font">
+                                <?php 
+                                $fontpath = "Fonts";
+
+                                if ( !is_dir( $fontpath ) ) {
+                                    exit('Invalid diretory path');
+                                }
+
+                                $files = array();
+                                foreach ( scandir( $fontpath ) as $file ) {
+                                    if ( $file !== '.' && $file !== '..' ) {
+                                        $selected = '';
+                                        if( $file == $domain_font ) {
+                                            $selected = 'selected';
+                                        }
+                                        echo "<option value='$file'>".str_replace( '-', ' ', $file )."</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
                         </div>
                     </div>
                 </div>
