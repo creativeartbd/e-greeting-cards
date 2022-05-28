@@ -96,15 +96,14 @@ require 'admin/vendor/autoload.php';
                     //Recipients
                     $mail->setFrom('support@shibbir.dev', 'Shibbir Dev');
                     $mail->addAddress($email, 'Shibbir Ahmed');     //Add a recipient
-
                     //Content
                     $mail->isHTML(true);                                  //Set email format to HTML
                     $mail->Subject = 'Greeting Card';
                     $mail->Body    = "<img src='$url'>";
                     $mail->AddEmbeddedImage($url,'testImage','test.jpg');
                     $mail->Body = '<img src="cid:testImage">';
-
                     $mail->send();
+                    
                     echo "<div class='alert alert-success mt-5'>Message has been sent";
                     
                 } catch (Exception $e) {

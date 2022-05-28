@@ -25,7 +25,7 @@ check_session();
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="dashboard.php">Send Email</a>
+                        <a class="nav-link active" aria-current="page" href="../index.php">Send Email</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="design" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -44,6 +44,12 @@ check_session();
                             <li><a class="dropdown-item" href="all-domain.php">All Domain</a></li>
                             <li><a class="dropdown-item" href="create-domain.php">Create domain</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="email-settings.php">Email Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.php">Frontend</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>

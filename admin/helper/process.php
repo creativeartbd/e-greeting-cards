@@ -897,3 +897,57 @@ if( isset( $_POST['form']) && $_POST['form'] == 'login' ) {
         echo json_encode($output);
     }
 }
+
+// Process email settings
+if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
+    // get all form field value
+    $from_domain = validate( $_POST['from_domain'] );
+    $from_name = validate( $_POST['from_name'] );
+    $email_subject = validate( $_POST['email_subject'] );
+    $email_body = validate( $_POST['email_body'] );
+    
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = 'dashboard.php';
+
+ 
+    if( isset( $from_domain) && isset( $from_name ) && isset( $email_subject ) && isset( $email_body ) ) {
+        if( empty( $from_domain ) && empty( $from_name ) && empty( $email_subject ) && empty( $email_body ) ) {
+            $output['message'][] = 'All fields is required';
+        } else {
+            // validate domain name
+            if( empty( $from_domain ) ) {
+                $output['message'][] = 'Email from domain address is required';
+            } elseif( strlen( $from_domain) > 30 || strlen( $from_domain) < 2 ) {
+                $output['message'][] = 'Email from domain address should be between 2-30 characters long';
+            }
+            // validate domain name
+            if( empty( $from_name ) ) {
+                $output['message'][] = 'Email from name is required';
+            } elseif( strlen( $from_name) > 30 || strlen( $from_name) < 2 ) {
+                $output['message'][] = 'Email from name should be between 2-30 characters long';
+            }
+            // validate domain name
+            if( empty( $email_subject ) ) {
+                $output['message'][] = 'Email subject title is required';
+            } elseif( strlen( $email_subject) > 150 || strlen( $email_subject) < 2 ) {
+                $output['message'][] = 'Email subject title should be between 2-150 characters long';
+            }
+    
+        }
+
+        if( empty( $output['message'] ) ) {
+
+            $uddate = mysqli_query( $mysqli, "UPDATE eg_email_settings SET from_domain = '$from_domain', from_name = '$from_name', email_subject = '$email_subject', email_body = '$email_body' ");
+            if( $uddate ) {
+                $output['success'] = true;
+                $output['message'][] = "Successfully updated the settings.";
+            } else {
+                $output['success'] = false;
+                $output['message'][] = "Opps! something wen't wrong.";
+            }
+        }
+        echo json_encode($output);
+    }
+}

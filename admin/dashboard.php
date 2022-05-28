@@ -1,44 +1,54 @@
 <?php require_once 'header.php'; ?>
 <div class="container">
     <div class="row">
-        <div class="col-sm-12 mt-5">
-            <h2>Send Email</h2>
+        <div class="col-sm-12 mt-5 mb-5">
+            <h2>Welcome to Dashboard <?php echo $_SESSION['username']; ?></h2>
         </div>
         <div class="col-md-7">
+            <h5>Email Settings</h5>
+            <?php
+            $get_settings = mysqli_query( $mysqli, "SELECT * FROM eg_email_settings");
+            $get_result = mysqli_fetch_array( $get_settings, MYSQLI_ASSOC );
+            $from_domain = isset( $get_result['from_domain'] ) ? $get_result['from_domain'] : '' ; 
+            $from_name = isset( $get_result['from_name'] ) ? $get_result['from_name'] : '' ; 
+            $email_subject = isset( $get_result['email_subject'] ) ?$get_result['email_subject'] : '' ; 
+            $email_body = isset( $get_result['email_body'] ) ? $get_result['email_body'] : '' ; 
+            ?>
             <form id="form">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Please write your full name</label>
-                    <input type="text" name="name" class="form-control" id="name">
-                </div>
-                <div class="mb-3">
-                    <div class="row">
-                        <div class="col">
-                            <label for="name" class="form-label">Enter your email address</label>
-                            <input type="text" name="email" class="form-control" id="email">
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="from_domain" class="form-label">Email from domain address</label>
+                            <input type="text" name="from_domain" value="<?php echo $from_domain; ?>" class="form-control" id="from_domain">
                         </div>
-                        <div class="col">
-                            <label for="" class="form-label">Choose a domain <span class='finding-design'></span></label>
-                            <select name="domain" id="" class="form-control choose-domain" data-form="choose_domain">
-                                <option value="">--Choose--</option>
-                                <?php 
-                                $get_domain = mysqli_query( $mysqli, "SELECT edo.*, edes.design_img FROM eg_design AS edes LEFT JOIN  eg_domains AS edo ON edo.domain_id = edes.domain_id");
-                                if( mysqli_num_rows( $get_domain) > 0 ) {
-                                    while ( $get_result = mysqli_fetch_array( $get_domain, MYSQLI_ASSOC ) ) {
-                                        $domain_id = $get_result['domain_id'];
-                                        $domain_name = $get_result['domain_name'];
-                                        $company = $get_result['company_name'];
-                                        echo "<option value='$domain_id'>$domain_name ($company)</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="from_name" class="form-label">Email from name</label>
+                            <input type="text" name="from_name" value="<?php echo $from_name; ?>" class="form-control" id="from_name">
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success">Send Email!</button>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="email_subject" class="form-label">Email subject title</label>
+                            <input type="text" name="email_subject" value="<?php echo $email_subject; ?>" class="form-control" id="email_subject">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="email_body" class="form-label">Email subject title <span class='text-danger'>(Optional)</span></label>
+                            <textarea name="email_body" id="email_body" cols="30" rows="5" class="form-control"><?php echo $email_body; ?></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-gradient-primary">Save Settings</button>
                 <div class="mt-3">
                     <div class="result"></div>
-                    <input type="hidden" name="form" value="send_email">
+                    <input type="hidden" name="form" value="email_settings">
                 </div>
             </form>
         </div>
