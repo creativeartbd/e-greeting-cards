@@ -1,23 +1,25 @@
 <?php 
 require_once 'functions.php';
 
-// Prepare the card and add the text on the card design
+// Generate the design for edit version
 if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
     
     $design = validate( $_POST['design'] );
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : '';
+    $domain = validate( $_POST['domain'] );
     
     // Design settings
     $design_font_size = validate( $_POST['fontsize'] );
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
-    $domain = validate( $_POST['domain'] );
     $color = validate( $_POST['color'] );
+    $design_font = validate( $_POST['design_font'] );
     // Domain settings
     $d_design_font_size = validate( $_POST['d_fontsize'] );
     $d_design_x = validate( $_POST['d_design_x'] );
     $d_design_y = validate( $_POST['d_design_y'] );
     $d_color = validate( $_POST['d_color'] );
+    $domain_font = validate( $_POST['domain_font'] );
     
 
     $domain_id = $domain;
@@ -93,7 +95,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
         
-        $font_path = '../Fonts/alfont_com_هلفيتيكا-عربي-.ttf';
+        $design_font_path = '../Fonts/'.$design_font;
+        $domain_font_path = '../Fonts/'.$domain_font;
         $text = $design;
         $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
         
@@ -107,7 +110,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $centerX = $width / 2;
         $centerY = $height / 2;
         // Get size of text
-        list($left, $bottom, $right, , , $top) = imageftbbox($font_size, $angle, $font_path, $text);
+        list($left, $bottom, $right, , , $top) = imageftbbox($font_size, $angle, $design_font_path, $text);
         // Determine offset of text
         $left_offset = ($right - $left) / 2;
         $top_offset = ($bottom - $top) / 2;
@@ -140,8 +143,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
             $d_y = $d_design_y;
         }
 
-        imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
-        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $font_path, $domain_name);
+        imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $design_font_path, $text);
+        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $domain_font_path, $domain_name);
 
         if( isset( $_FILES['design']['name'] ) && ! empty( $_FILES['design']['name']) ) {
             if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
@@ -177,11 +180,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
     $design_x = isset( $_POST['domain'] ) ? validate( $_POST['design_x'] ) : '';
     $design_y = isset( $_POST['domain'] ) ? validate( $_POST['design_y'] ) : '';
     $color = isset( $_POST['domain'] ) ? validate( $_POST['color'] ) : '#000000';
+    $design_font = isset( $_POST['design_font'] ) ? validate( $_POST['design_font'] ) : '';
     // Domain settings
     $d_design_font_size = isset( $_POST['d_fontsize'] ) ? validate( $_POST['d_fontsize'] )  : 30;
     $d_design_x = isset( $_POST['d_design_x'] ) ? validate( $_POST['d_design_x'] ) : '';
     $d_design_y = isset( $_POST['d_design_y'] ) ? validate( $_POST['d_design_y'] ) : '';
     $d_color = isset( $_POST['d_color'] ) ? validate( $_POST['d_color'] ) : '#000000';
+    $domain_font = isset( $_POST['domain_font'] ) ? validate( $_POST['domain_font'] ) : '';
 
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : 0;
     $form = isset( $_POST['domain'] ) ? validate( $_POST['form'] ) : '';
@@ -209,8 +214,8 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
     $new_file_name = time().'.'.$extension;
 
 
-    if( isset( $domain ) && isset( $file_name ) && isset( $design ) && isset( $design_font_size ) && isset( $design_x ) && isset( $design_y ) && isset( $color ) ) {
-        if( empty( $domain ) && empty( $file_name ) && empty( $design ) && empty( $design_font_size ) && empty( $design_x ) && empty( $design_y ) && empty( $color )) {
+    if( isset( $design_font ) && isset( $domain_font ) && isset( $domain ) && isset( $file_name ) && isset( $design ) && isset( $design_font_size ) && isset( $design_x ) && isset( $design_y ) && isset( $color ) ) {
+        if( empty( $domain ) && empty( $file_name ) && empty( $design ) && empty( $design_font_size ) && empty( $design_x ) && empty( $design_y ) && empty( $color ) && empty( $design_font ) && empty( $domain_font ) ) {
             $output['message'][] = 'All field is required.';
         } else {
 
@@ -270,6 +275,10 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 $output['message'][] = 'Title color is required';
             }
 
+            if( empty( $design_font ) ) {
+                $output['message'][] = 'Select the font name for the design title';
+            }
+
             // Domain Settings validation
             if( empty( $d_design_font_size ) ) {
                 $output['message'][] = 'Domain font size is reuquired.';
@@ -299,6 +308,10 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 $output['message'][] = 'Domain color is required';
             }
 
+            if( empty( $domain_font ) ) {
+                $output['message'][] = 'Select the font name for the domain name';
+            }
+
             if( empty( $domain ) ) {
                 $output['message'][] = 'Enter your domain name.';
             } elseif( !preg_match('/^[0-9]+$/', $domain) ) {
@@ -324,11 +337,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                         'design_font_size' => "'$design_font_size'",
                         'design_x' => "'$design_x'",
                         'design_y' => "'$design_y'",
+                        'design_font' => "'$design_font'",
 
                         'd_color' => "'$d_color'",
                         'd_design_font_size' => "'$d_design_font_size'",
                         'd_design_x' => "'$d_design_x'",
                         'd_design_y' => "'$d_design_y'",
+                        'domain_font' => "'$domain_font'",
                     ];
 
                     $key = array_keys( $columns );
@@ -425,11 +440,13 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
     $color = validate( $_POST['color'] );
+    $design_font = validate( $_POST['design_font'] );
 
     $d_design_font_size = validate( $_POST['d_fontsize'] );
     $d_design_x = validate( $_POST['d_design_x'] );
     $d_design_y = validate( $_POST['d_design_y'] );
     $d_color = validate( $_POST['d_color'] );
+    $domain_font = validate( $_POST['domain_font'] );
 
     $domain_id = $domain;
     $file_name = $file_tmp_name = $file_size = $file_type = $extension = '';
@@ -484,11 +501,12 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
 
-        $font_path = '../Fonts/alfont_com_هلفيتيكا-عربي-.ttf';
+        $font_path = '../Fonts/'.$design_font;
+        $domain_font_path = '../Fonts/'.$domain_font;
         $text = $design;
         $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
         
-        $font_size = 30;
+        $font_size = $d_font_size = 30;
         $angle = 0;
 
         // Get image dimensions
@@ -548,7 +566,7 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         
 
         imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $font_path, $text);
-        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $font_path, $domain_name);
+        imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $domain_font_path, $domain_name);
 
         //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
         if( in_array( $extension, [ 'jpg', 'jpeg'] ) ) {
