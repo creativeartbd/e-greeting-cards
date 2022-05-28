@@ -37,11 +37,13 @@ require 'admin/vendor/autoload.php';
                 $design_x = $get_result['design_x'];
                 $design_y = $get_result['design_y'];
                 $color = $get_result['color'];
+                $design_font = $get_result['design_font'];
 
                 $d_design_font_size = $get_result['d_design_font_size'];
                 $d_design_x = $get_result['d_design_x'];
                 $d_design_y = $get_result['d_design_y'];
                 $d_color = $get_result['d_color'];
+                $domain_font = $get_result['domain_font'];
 
                 $domain_name = $get_result['domain_name'];
 
@@ -63,7 +65,8 @@ require 'admin/vendor/autoload.php';
                 $title_color = imagecolorallocate($image, $r, $g, $b);
                 $domain_color = imagecolorallocate($image, $d_r, $d_g, $d_b);
 
-                $font_path = 'admin/Fonts/alfont_com_هلفيتيكا-عربي-.ttf';
+                $font_path = 'admin/Fonts/'.$design_font;
+                $domain_font_path = 'admin/Fonts/'.$domain_font;
                 $text = $name;
                 $font_size = $design_font_size;
                 $angle = 0;
@@ -84,7 +87,7 @@ require 'admin/vendor/autoload.php';
                 $y = $centerY + $top_offset;
                 // Add text to image
                 imagettftext( $image, $design_font_size, $angle, $design_x, $design_y, $title_color, $font_path, $text);
-                imagettftext( $image, $d_design_font_size, $angle, $d_design_x, $d_design_y, $domain_color, $font_path, $domain_name);
+                imagettftext( $image, $d_design_font_size, $angle, $d_design_x, $d_design_y, $domain_color, $domain_font_path, $domain_name);
                 //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
                 $time = time().'.'.$extension;
                 if( $extension == 'jpg' || $extension == 'jpeg' ) {
