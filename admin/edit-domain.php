@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <?php
             $domain_id = (int) $_GET['domain_id'];
-            $get_domain = mysqli_query( $mysqli, "SELECT * FROM sg_domains WHERE domain_id = '$domain_id' ");
+            $get_domain = mysqli_query( $mysqli, "SELECT * FROM eg_domains WHERE domain_id = '$domain_id' ");
             if( mysqli_num_rows( $get_domain ) > 0 ) :
                 $get_result = mysqli_fetch_array( $get_domain );
                 $domain_name = $get_result['domain_name'];

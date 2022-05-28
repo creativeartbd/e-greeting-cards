@@ -1,7 +1,6 @@
 <?php 
 require_once 'admin/helper/connection.php';
 require_once 'admin/helper/functions.php';
-check_session();
 ?>
 <!DOCTYPE html>
 <html lang="en">
