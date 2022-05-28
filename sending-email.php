@@ -18,7 +18,17 @@ require 'admin/vendor/autoload.php';
             $email = isset( $_GET['email'] ) ? (string) $_GET['email'] : '';
 
             $get_domain = mysqli_query( $mysqli, "SELECT edg.*, ed.domain_name FROM eg_design AS edg LEFT JOIN eg_domains AS ed ON edg.domain_id = ed.domain_id WHERE edg.domain_id = '$domain_id' ");
+
             if( mysqli_num_rows( $get_domain ) > 0 ) {
+
+                // get email settings
+                $get_settings = mysqli_query( $mysqli, "SELECT * FROM eg_email_settings");
+                $get_result = mysqli_fetch_array( $get_settings, MYSQLI_ASSOC );
+                $from_domain = isset( $get_result['from_domain'] ) ? $get_result['from_domain'] : '' ; 
+                $from_name = isset( $get_result['from_name'] ) ? $get_result['from_name'] : '' ; 
+                $email_subject = isset( $get_result['email_subject'] ) ?$get_result['email_subject'] : '' ; 
+                $email_body = isset( $get_result['email_body'] ) ? $get_result['email_body'] : '' ;
+
                 // Result data
                 $get_result = mysqli_fetch_array( $get_domain, MYSQLI_ASSOC );
                 $design_img = $get_result['design_img'];
@@ -90,21 +100,20 @@ require 'admin/vendor/autoload.php';
                 
                 //Create an instance; passing `true` enables exceptions
                 $mail = new PHPMailer(true);
-
-                try {
-                    
+                try {  
                     //Recipients
-                    $mail->setFrom('support@shibbir.dev', 'Shibbir Dev');
-                    $mail->addAddress($email, 'Shibbir Ahmed');     //Add a recipient
+                    $mail->setFrom($from_name, $from_name);
+                    $mail->addAddress($email, $name);  //Add a recipient
                     //Content
-                    $mail->isHTML(true);                                  //Set email format to HTML
-                    $mail->Subject = 'Greeting Card';
+                    $mail->isHTML(true);//Set email format to HTML
+                    $mail->Subject = $email_subject;
                     $mail->Body    = "<img src='$url'>";
-                    $mail->AddEmbeddedImage($url,'testImage','test.jpg');
-                    $mail->Body = '<img src="cid:testImage">';
+                    $mail->AddEmbeddedImage($url,'greetingcard','greetingcard.'.$extension);
+                    $mail->Body = $email_body;
+                    $mail->Body = '<img src="cid:greetingcard">';
                     $mail->send();
-                    
-                    echo "<div class='alert alert-success mt-5'>Message has been sent";
+
+                    echo "<div class='alert alert-success mt-5'>Successfully sent your message.";
                     
                 } catch (Exception $e) {
                     echo "<div class='alert alert-success mt-5'>Message could not be sent. Mailer Error: {$mail->ErrorInfo}";

@@ -16,7 +16,7 @@ check_session();
 <body>
 
 <div class="container-fluid">
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg bg-light pt-3 pb-3">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -52,7 +52,7 @@ check_session();
                         <a class="nav-link" href="../index.php">Frontend</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
+                        <a class="nav-link btn btn-gradient-danger btn-sm text-white px-3" href="logout.php">Logout</a>
                     </li>
                 </ul>
             </div>
