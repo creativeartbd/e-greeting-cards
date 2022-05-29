@@ -46,7 +46,7 @@ check_session();
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="email-settings.php">Email Settings</a>
+                        <a class="nav-link" href="dashboard.php">Email Settings</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../index.php">Frontend</a>

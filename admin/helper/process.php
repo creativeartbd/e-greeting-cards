@@ -734,6 +734,9 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
     $output['success'] = false;
     $output['redirect'] = "all-domain.php";
 
+    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company = '$company' ");
+    $found_domain = mysqli_num_rows( $check_domain );
+
     if( isset( $domain) ) {
 
         if( empty( $domain ) ) {
@@ -755,6 +758,10 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
         if( empty( $domain_id ) ) {
             $output['message'][] = 'Your domain id missing';
         }
+
+        if( $found_domain > 0 ) {
+            $output['message'][] = 'The domain is already associated with the company name.';
+        }   
 
         if( empty( $output['message'] ) ) {
            
@@ -782,6 +789,9 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
     $output['success'] = false;
     $output['redirect'] = "all-domain.php";
 
+    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company = '$company' ");
+    $found_domain = mysqli_num_rows( $check_domain );
+
     if( isset( $domain ) && isset( $company ) ) {
 
         if( empty( $domain ) ) {
@@ -794,11 +804,15 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
 
         if( empty( $company ) ) {
             $output['message'][] = 'Enter your company name.';
-        } elseif( !preg_match('/^[a-zA-Z]+$/', $company) ) {
+        } elseif( !preg_match('/^[a-zA-Z ]+$/', $company) ) {
             $output['message'][] = 'Your company name should be contain only characters.';
         } elseif( strlen( $company) > 40 || strlen( $company ) < 2 ) {
             $output['message'][] = 'Your company should be 2-40 characters long.';
         }
+
+        if( $found_domain > 0 ) {
+            $output['message'][] = 'The domain is already associated with the company name.';
+        }   
 
         if( empty( $output['message'] ) ) {
 
