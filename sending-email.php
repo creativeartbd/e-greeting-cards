@@ -110,10 +110,9 @@ require 'admin/vendor/autoload.php';
                     //Content
                     $mail->isHTML(true);//Set email format to HTML
                     $mail->Subject = $email_subject;
-                    $mail->Body    = "<img src='$url'>";
+                    $mail->Body = "<p>$email_body</p>";
                     $mail->AddEmbeddedImage($url,'greetingcard','greetingcard.'.$extension);
-                    $mail->Body = $email_body;
-                    $mail->Body = '<img src="cid:greetingcard">';
+                    $mail->Body .= '<img src="cid:greetingcard">';
                     $mail->send();
 
                     echo "<div class='alert alert-success mt-5'>Successfully sent your message.";

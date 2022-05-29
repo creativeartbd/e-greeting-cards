@@ -95,10 +95,15 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
         
-        $design_font_path = '../Fonts/'.$design_font;
+        $design_font_path = '../Fonts/(A) Arslan Wessam A (A) Arslan Wessam A.ttf';
         $domain_font_path = '../Fonts/'.$domain_font;
         $text = $design;
-        $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
+        //$text = word2uni( $text );
+        $Arabic = new I18N_Arabic('Glyphs'); 
+$text = 'بسم الله الرحمن الرحيم';  
+$text = $Arabic->utf8Glyphs($text);
+        //mb_convert_encoding('test', 'UTF-16LE', 'UTF-8');
+
         
         $font_size = 30;
         $angle = 0;
@@ -506,7 +511,7 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $font_path = '../Fonts/'.$design_font;
         $domain_font_path = '../Fonts/'.$domain_font;
         $text = $design;
-        $text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
+        //$text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
         
         $font_size = $d_font_size = 30;
         $angle = 0;
