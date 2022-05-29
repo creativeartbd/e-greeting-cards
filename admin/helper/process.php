@@ -734,7 +734,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
     $output['success'] = false;
     $output['redirect'] = "all-domain.php";
 
-    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company = '$company' ");
+    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company_name = '$company' ");
     $found_domain = mysqli_num_rows( $check_domain );
 
     if( isset( $domain) ) {
@@ -789,7 +789,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
     $output['success'] = false;
     $output['redirect'] = "all-domain.php";
 
-    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company = '$company' ");
+    $check_domain = mysqli_query( $mysqli, "SELECT domain_name FROM eg_domains WHERE domain_name = '$domain' AND company_name = '$company' ");
     $found_domain = mysqli_num_rows( $check_domain );
 
     if( isset( $domain ) && isset( $company ) ) {

@@ -24,10 +24,10 @@ require 'admin/vendor/autoload.php';
                 // get email settings
                 $get_settings = mysqli_query( $mysqli, "SELECT * FROM eg_email_settings");
                 $get_result = mysqli_fetch_array( $get_settings, MYSQLI_ASSOC );
-                $from_domain = isset( $get_result['from_domain'] ) ? $get_result['from_domain'] : '' ; 
-                $from_name = isset( $get_result['from_name'] ) ? $get_result['from_name'] : '' ; 
-                $email_subject = isset( $get_result['email_subject'] ) ?$get_result['email_subject'] : '' ; 
-                $email_body = isset( $get_result['email_body'] ) ? $get_result['email_body'] : '' ;
+                $from_domain = !empty( $get_result['from_domain'] ) ? $get_result['from_domain'] : '' ; 
+                $from_name = !empty( $get_result['from_name'] ) ? $get_result['from_name'] : '' ; 
+                $email_subject = !empty( $get_result['email_subject'] ) ?$get_result['email_subject'] : '' ; 
+                $email_body = !empty( $get_result['email_body'] ) ? $get_result['email_body'] : '' ;
 
                 // Result data
                 $get_result = mysqli_fetch_array( $get_domain, MYSQLI_ASSOC );
@@ -105,7 +105,7 @@ require 'admin/vendor/autoload.php';
                 $mail = new PHPMailer(true);
                 try {  
                     //Recipients
-                    $mail->setFrom($from_name, $from_name);
+                    $mail->setFrom($from_domain, $from_name);
                     $mail->addAddress($email, $name);  //Add a recipient
                     //Content
                     $mail->isHTML(true);//Set email format to HTML
@@ -119,7 +119,7 @@ require 'admin/vendor/autoload.php';
                     echo "<div class='alert alert-success mt-5'>Successfully sent your message.";
                     
                 } catch (Exception $e) {
-                    echo "<div class='alert alert-success mt-5'>Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+                    echo "<div class='alert alert-danger mt-5'>Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
                 }       
 
             } else {
