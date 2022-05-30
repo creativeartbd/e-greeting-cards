@@ -1,5 +1,6 @@
 <?php 
 require_once 'functions.php';
+require_once '../word2uni-main/word2uni.php';
 
 // Generate the design for edit version
 if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
@@ -95,15 +96,10 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
         
-        $design_font_path = '../Fonts/(A) Arslan Wessam A (A) Arslan Wessam A.ttf';
+        $design_font_path = '../Fonts/'.$design_font;
         $domain_font_path = '../Fonts/'.$domain_font;
-        $text = $design;
-        //$text = word2uni( $text );
-        $Arabic = new I18N_Arabic('Glyphs'); 
-$text = 'بسم الله الرحمن الرحيم';  
-$text = $Arabic->utf8Glyphs($text);
-        //mb_convert_encoding('test', 'UTF-16LE', 'UTF-8');
-
+        $text = text2uni($design);
+        $domain_name = text2uni($domain_name);
         
         $font_size = 30;
         $angle = 0;
@@ -511,6 +507,8 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $font_path = '../Fonts/'.$design_font;
         $domain_font_path = '../Fonts/'.$domain_font;
         $text = $design;
+        $text = text2uni($design);
+        $domain_name = text2uni($domain_name);
         //$text = mb_convert_encoding($text, "HTML-ENTITIES", "UTF-8");
         
         $font_size = $d_font_size = 30;

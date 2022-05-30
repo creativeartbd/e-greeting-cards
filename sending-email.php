@@ -46,6 +46,7 @@ require 'admin/vendor/autoload.php';
                 $domain_font = $get_result['domain_font'];
 
                 $domain_name = $get_result['domain_name'];
+                $domain_name = text2uni($domain_name);
 
                 $explode = explode( '.', $design_img );
                 $extension = $explode[1];
@@ -68,6 +69,7 @@ require 'admin/vendor/autoload.php';
                 $font_path = 'admin/Fonts/'.$design_font;
                 $domain_font_path = 'admin/Fonts/'.$domain_font;
                 $text = $name;
+                $text = text2uni($name);
                 $font_size = $design_font_size;
                 $angle = 0;
 
