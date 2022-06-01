@@ -45,48 +45,52 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <h5>Title Settings</h5><hr>
-                    <div class="row">
-                        <div class="col">
-                            <label for="fontsize" class="form-label">Font size</label>
-                            <input type="number" name="fontsize" class="form-control" id="fontsize" value="<?php echo $design_font_size; ?>">
-                        </div>
-                        <div class="col">
-                            <label for="design_x" class="form-label">Position X</label>
-                            <input type="number" name="design_x" class="form-control" id="design_x" value="<?php echo $design_x; ?>">
-                        </div>
-                        <div class="col">
-                            <label for="design_y" class="form-label">Position Y</label>
-                            <input type="number" name="design_y" class="form-control" id="design_y" value="<?php echo $design_y; ?>">
-                        </div>
-                        <div class="col">
-                            <label for="color" class="form-label">Color</label>
-                            <input type="color" name="color" class="form-control" id="color" value="<?php echo $color; ?>">
-                        </div>
-                        <div class="col">
-                            <label for="design_font" class="form-label">Design Font Name</label>
-                            <select  name="design_font" class="form-control" id="design_font">
-                                <?php 
-                                $fontpath = "Fonts";
+                
+                <h5>Title Settings</h5><hr>
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="fontsize" class="form-label">Font size</label>
+                        <input type="number" name="fontsize" class="form-control" id="fontsize" value="<?php echo $design_font_size; ?>">
+                    </div>
+                    <div class="col mb-3">
+                        <label for="design_x" class="form-label">Position X</label>
+                        <input type="number" name="design_x" class="form-control" id="design_x" value="<?php echo $design_x; ?>">
+                    </div>
+                    <div class="col mb-3">
+                        <label for="design_y" class="form-label">Position Y</label>
+                        <input type="number" name="design_y" class="form-control" id="design_y" value="<?php echo $design_y; ?>">
+                    </div>
+                </div>
+            
+            
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="color" class="form-label">Color</label>
+                        <input type="color" name="color" class="form-control" id="color" value="<?php echo $color; ?>">
+                    </div>
+                    <div class="col mb-3">
+                        <label for="design_font" class="form-label">Design Font Name</label>
+                        <select  name="design_font" class="form-control" id="design_font">
+                            <option value="">--Choose Font--</option>
+                            <?php 
+                            $get_font = mysqli_query( $mysqli, "SELECT * FROM eg_fonts ");
+                            if( mysqli_num_rows( $get_font ) > 0 ) {
+                                while( $get_result_font = mysqli_fetch_array( $get_font, MYSQLI_ASSOC ) ) {
 
-                                if ( !is_dir( $fontpath ) ) {
-                                    exit('Invalid diretory path');
-                                }
+                                    $font_id = $get_result_font['font_id'];
+                                    $font_name = $get_result_font['font_name'];
+                                    $font_title = ucfirst( $get_result_font['font_title'] );
 
-                                $files = array();
-                                foreach ( scandir( $fontpath ) as $file ) {
-                                    if ( $file !== '.' && $file !== '..' ) {
-                                        $selected = '';
-                                        if( $file == $design_font ) {
-                                            $selected = 'selected';
-                                        }
-                                        echo "<option $selected value='$file'>".str_replace( '-', ' ', $file )."</option>";
+                                    $selected = '';
+                                    if( $font_id == $design_font ) {
+                                        $selected = 'selected';
                                     }
-                                }
-                                ?>
-                            </select>
-                        </div>
+
+                                    echo "<option $selected value='{$font_id}|{$font_name}'>$font_title</option>";
+                                }   
+                            } 
+                            ?>
+                        </select>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -104,6 +108,10 @@
                             <label for="d_design_y" class="form-label">Position Y</label>
                             <input type="number" name="d_design_y" class="form-control" id="d_design_y" value="<?php echo $d_design_y; ?>">
                         </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
                         <div class="col">
                             <label for="d_color" class="form-label">Color</label>
                             <input type="color" name="d_color" class="form-control" id="d_color" value="<?php echo $d_color; ?>">
@@ -111,23 +119,24 @@
                         <div class="col">
                             <label for="domain_font" class="form-label">Domain Font Name</label>
                             <select  name="domain_font" class="form-control" id="domain_font">
+                                <option value="">--Choose Font--</option>
                                 <?php 
-                                $fontpath = "Fonts";
+                                $get_font = mysqli_query( $mysqli, "SELECT * FROM eg_fonts ");
+                                if( mysqli_num_rows( $get_font ) > 0 ) {
+                                    while( $get_result_font = mysqli_fetch_array( $get_font, MYSQLI_ASSOC ) ) {
 
-                                if ( !is_dir( $fontpath ) ) {
-                                    exit('Invalid diretory path');
-                                }
+                                        $font_id = $get_result_font['font_id'];
+                                        $font_name = $get_result_font['font_name'];
+                                        $font_title = ucfirst( $get_result_font['font_title'] );
 
-                                $files = array();
-                                foreach ( scandir( $fontpath ) as $file ) {
-                                    if ( $file !== '.' && $file !== '..' ) {
                                         $selected = '';
-                                        if( $file == $domain_font ) {
+                                        if( $font_id == $domain_font ) {
                                             $selected = 'selected';
                                         }
-                                        echo "<option value='$file'>".str_replace( '-', ' ', $file )."</option>";
-                                    }
-                                }
+
+                                        echo "<option $selected value='{$font_id}|{$font_name}'>$font_title</option>";
+                                    }   
+                                } 
                                 ?>
                             </select>
                         </div>

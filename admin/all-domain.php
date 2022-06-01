@@ -14,7 +14,7 @@
                     <th>Action</th>
                 </tr>
                 <?php 
-                $get_domain = mysqli_query( $mysqli, "SELECT * FROM eg_domains");
+                $get_domain = mysqli_query( $mysqli, "SELECT * FROM eg_domains ORDER BY domain_id DESC");
                 if( mysqli_num_rows( $get_domain) > 0 ) {
 
                     $count = 1;

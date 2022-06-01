@@ -67,7 +67,7 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'upload_font' ||  $_POST['for
 
             if( empty( $font_title ) ) {
                 $output['message'][] = 'Enter your font title.';
-            } elseif( !preg_match('/^[a-zA-Z. ]+$/', $font_title) ) {
+            } elseif( !preg_match('/^[a-zA-Z.\- ]+$/', $font_title) ) {
                 $output['message'][] = 'Font title should be contain only characters.';
             } elseif( strlen( $font_title) > 50 || strlen( $font_title ) < 2 ) {
                 $output['message'][] = 'Font title should be 2-50 characters long.';
@@ -146,14 +146,26 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
     $color = validate( $_POST['color'] );
-    $design_font = validate( $_POST['design_font'] );
+
+    $design_font = isset( $_POST['design_font'] ) ? validate( $_POST['design_font'] ) : '';
+    if( ! empty( $design_font ) ) {
+        $explode_design_font = explode("|", $design_font);
+        $design_font_id = $explode_design_font[0];
+        $design_font = $explode_design_font[1];
+    }
+
     // Domain settings
     $d_design_font_size = validate( $_POST['d_fontsize'] );
     $d_design_x = validate( $_POST['d_design_x'] );
     $d_design_y = validate( $_POST['d_design_y'] );
     $d_color = validate( $_POST['d_color'] );
-    $domain_font = validate( $_POST['domain_font'] );
-    
+
+    $domain_font = isset( $_POST['domain_font']) ? validate( $_POST['domain_font'] ) : '';
+    if( ! empty( $domain_font ) ) {
+        $explode_domain_font = explode("|", $domain_font);
+        $domain_font_id = $explode_domain_font[0];
+        $domain_font = $explode_domain_font[1];
+    }
 
     $domain_id = $domain;
 
@@ -193,6 +205,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         echo "<div class='alert alert-danger'>Design title is reuqired.</div>";
     } elseif( ! in_array( $extension, $allowed_extension ) ) {
         echo "<div class='alert alert-danger'>Only JPG and PNG image is allowed.</div>";
+    } elseif( empty( $design_font) || empty( $domain_font ) ) {
+        echo "<div class='alert alert-danger'>Please choose a font name for both design and domain.</div>";
     } else {
         // Store generate desing, we will delete it later
         $_SESSION['output_design'][] = $new_file_name;
@@ -313,13 +327,27 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
     $design_x = isset( $_POST['domain'] ) ? validate( $_POST['design_x'] ) : '';
     $design_y = isset( $_POST['domain'] ) ? validate( $_POST['design_y'] ) : '';
     $color = isset( $_POST['domain'] ) ? validate( $_POST['color'] ) : '#000000';
+
     $design_font = isset( $_POST['design_font'] ) ? validate( $_POST['design_font'] ) : '';
+    if( !empty( $design_font ) ) {
+        $explode_design_font = explode("|", $design_font);
+        $design_font_id = $explode_design_font[0];
+        $design_font = $explode_design_font[1];
+    }
+
     // Domain settings
     $d_design_font_size = isset( $_POST['d_fontsize'] ) ? validate( $_POST['d_fontsize'] )  : 30;
     $d_design_x = isset( $_POST['d_design_x'] ) ? validate( $_POST['d_design_x'] ) : '';
     $d_design_y = isset( $_POST['d_design_y'] ) ? validate( $_POST['d_design_y'] ) : '';
     $d_color = isset( $_POST['d_color'] ) ? validate( $_POST['d_color'] ) : '#000000';
+
     $domain_font = isset( $_POST['domain_font'] ) ? validate( $_POST['domain_font'] ) : '';
+    if( !empty( $domain_font ) ) {
+        $explode_domain_font = explode("|", $domain_font);
+        $domain_font_id = $explode_domain_font[0];
+        $domain_font = $explode_domain_font[1];
+    }
+    
 
     $design_id = isset( $_POST['design_id'] ) ? validate( $_POST['design_id'] ) : 0;
     $form = isset( $_POST['domain'] ) ? validate( $_POST['form'] ) : '';
@@ -470,13 +498,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                         'design_font_size' => "'$design_font_size'",
                         'design_x' => "'$design_x'",
                         'design_y' => "'$design_y'",
-                        'design_font' => "'$design_font'",
+                        'design_font' => "'$design_font_id'",
 
                         'd_color' => "'$d_color'",
                         'd_design_font_size' => "'$d_design_font_size'",
                         'd_design_x' => "'$d_design_x'",
                         'd_design_y' => "'$d_design_y'",
-                        'domain_font' => "'$domain_font'",
+                        'domain_font' => "'$domain_font_id'",
                     ];
 
                     $key = array_keys( $columns );
@@ -499,13 +527,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                         'design_font_size' => "'$design_font_size'",
                         'design_x' => "'$design_x'",
                         'design_y' => "'$design_y'",
-                        'design_font' => "'$design_font'",
+                        'design_font' => "'$design_font_id'",
 
                         'd_color' => "'$d_color'",
                         'd_design_font_size' => "'$d_design_font_size'",
                         'd_design_x' => "'$d_design_x'",
                         'd_design_y' => "'$d_design_y'",
-                        'domain_font' => "'$domain_font'",
+                        'domain_font' => "'$domain_font_id'",
                     ];
 
                     
@@ -575,13 +603,26 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
     $design_x = validate( $_POST['design_x'] );
     $design_y = validate( $_POST['design_y'] );
     $color = validate( $_POST['color'] );
-    $design_font = validate( $_POST['design_font'] );
 
+    $design_font = isset( $_POST['design_font'] ) ? validate( $_POST['design_font'] ) : '';
+    if( !empty( $design_font ) ) {
+        $explode_font = explode("|", $design_font);
+        $design_font_id = $explode_font[0];
+        $design_font = $explode_font[1];
+    }
+    
     $d_design_font_size = validate( $_POST['d_fontsize'] );
     $d_design_x = validate( $_POST['d_design_x'] );
     $d_design_y = validate( $_POST['d_design_y'] );
     $d_color = validate( $_POST['d_color'] );
-    $domain_font = validate( $_POST['domain_font'] );
+
+    $domain_font = isset( $_POST['domain_font'] ) ? validate( $_POST['domain_font'] ) : '';
+    if( !empty( $domain_font ) ) {
+        $explode_domain_font = explode("|", $domain_font);
+        $domain_font_id = $explode_domain_font[0];
+        $domain_font = $explode_domain_font[1];
+    }
+    
 
     $domain_id = $domain;
     $file_name = $file_tmp_name = $file_size = $file_type = $extension = '';
@@ -612,6 +653,8 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         echo "<div class='alert alert-danger'>Design title is reuqired.</div>";
     } elseif( empty( $file_name ) ) {
         echo "<div class='alert alert-danger'>Please upload a design.</div>";
+    } elseif( empty( $design_font) || empty( $domain_font ) ) {
+        echo "<div class='alert alert-danger'>Please choose a font name for both design and domain.</div>";
     } elseif( ! in_array( $extension, $allowed_extension ) ) {
         echo "<div class='alert alert-danger'>Only JPG and PNG image is allowed.</div>";
     } elseif( $found_domain == 0 ) {
@@ -876,7 +919,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
 
         if( empty( $domain ) ) {
             $output['message'][] = 'Enter your domain name.';
-        } elseif( !preg_match('/^[a-zA-Z]+$/', $domain) ) {
+        } elseif( !preg_match('/^[a-zA-Z. ]+$/', $domain) ) {
             $output['message'][] = 'Your domain should be contain only characters.';
         } elseif( strlen( $domain) > 40 || strlen( $domain ) < 2 ) {
             $output['message'][] = 'Your domain should be 2-40 characters long.';

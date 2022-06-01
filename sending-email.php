@@ -1,5 +1,6 @@
 <?php 
 require_once 'header.php'; 
+require_once 'admin/word2uni-main/word2uni.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -37,13 +38,21 @@ require 'admin/vendor/autoload.php';
                 $design_x = $get_result['design_x'];
                 $design_y = $get_result['design_y'];
                 $color = $get_result['color'];
+                
                 $design_font = $get_result['design_font'];
+                $get_design_font_name = mysqli_query( $mysqli, "SELECT font_name FROM eg_fonts WHERE font_id = '$design_font' ");
+                $get_design_font_result = mysqli_fetch_array( $get_design_font_name, MYSQLI_ASSOC );
+                $design_font = $get_design_font_result['font_name'];
 
                 $d_design_font_size = $get_result['d_design_font_size'];
                 $d_design_x = $get_result['d_design_x'];
                 $d_design_y = $get_result['d_design_y'];
                 $d_color = $get_result['d_color'];
+
                 $domain_font = $get_result['domain_font'];
+                $get_domain_font_name = mysqli_query( $mysqli, "SELECT font_name FROM eg_fonts WHERE font_id = '$domain_font' ");
+                $get_domain_font_result = mysqli_fetch_array( $get_domain_font_name, MYSQLI_ASSOC );
+                $domain_font = $get_domain_font_result['font_name'];
 
                 $domain_name = $get_result['domain_name'];
                 $domain_name = text2uni($domain_name);
@@ -67,7 +76,7 @@ require 'admin/vendor/autoload.php';
                 $domain_color = imagecolorallocate($image, $d_r, $d_g, $d_b);
 
                 $font_path = 'admin/assets/fonts/'.$design_font;
-                $domain_font_path = 'admin/assts/fonts/'.$domain_font;
+                $domain_font_path = 'admin/assets/fonts/'.$domain_font;
                 $text = $name;
                 $text = text2uni($name);
                 $font_size = $design_font_size;

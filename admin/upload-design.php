@@ -47,6 +47,7 @@
                         <div class="col">
                             <label for="design_font" class="form-label">Design Font Name</label>
                             <select  name="design_font" class="form-control" id="design_font">
+                                <option value="">--Choose Font--</option>
                                 <?php 
                                 $get_font = mysqli_query( $mysqli, "SELECT * FROM eg_fonts ");
                                 if( mysqli_num_rows( $get_font ) > 0 ) {
@@ -54,7 +55,7 @@
                                         $font_id = $get_result_font['font_id'];
                                         $font_name = $get_result_font['font_name'];
                                         $font_title = ucfirst( $get_result_font['font_title'] );
-                                        echo "<option value='$font_id'>$font_title</option>";
+                                        echo "<option value='{$font_id}|{$font_name}'>$font_title</option>";
                                     }   
                                 } 
                                 ?>
@@ -88,19 +89,17 @@
                         <div class="col">
                             <label for="domain_font" class="form-label">Domain Font Name</label>
                             <select  name="domain_font" class="form-control" id="domain_font">
+                                <option value="">--Choose Font--</option>
                                 <?php 
-                                $fontpath = "Fonts";
-
-                                if ( !is_dir( $fontpath ) ) {
-                                    exit('Invalid diretory path');
-                                }
-
-                                $files = array();
-                                foreach ( scandir( $fontpath ) as $file ) {
-                                    if ( $file !== '.' && $file !== '..' ) {
-                                        echo "<option value='$file'>".str_replace( '-', ' ', $file )."</option>";
-                                    }
-                                }
+                                $get_font = mysqli_query( $mysqli, "SELECT * FROM eg_fonts ");
+                                if( mysqli_num_rows( $get_font ) > 0 ) {
+                                    while( $get_result_font = mysqli_fetch_array( $get_font, MYSQLI_ASSOC ) ) {
+                                        $font_id = $get_result_font['font_id'];
+                                        $font_name = $get_result_font['font_name'];
+                                        $font_title = ucfirst( $get_result_font['font_title'] );
+                                        echo "<option value='{$font_id}|{$font_name}'>$font_title</option>";
+                                    }   
+                                } 
                                 ?>
                             </select>
                         </div>
