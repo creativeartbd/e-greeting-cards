@@ -2,6 +2,138 @@
 require_once 'functions.php';
 require_once '../word2uni-main/word2uni.php';
 
+// delete domain 
+if( isset( $_POST['form'] ) && $_POST['form'] == 'delete_font' ) {
+
+    $font_id = (int) validate( $_POST['delete_id'] );
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = "all-fonts.php";
+
+    if( empty( $font_id ) ) {
+        $output['message'][] = 'Your font id missing';
+    }
+
+    if( empty( $output['message'] ) ) {
+        $delete = mysqli_query( $mysqli, "DELETE FROM eg_fonts WHERE font_id = '$font_id' ");
+        if( $delete ) {
+            $output['success'] = true;
+            $output['message'][] = "Successfully deleted the font.";
+        } else {
+            $output['success'] = false;
+            $output['message'][] = "Opps! something wen't wrong.";
+        }
+    }
+    echo json_encode($output);
+}
+
+// create font 
+if( isset( $_POST['form'] ) && ( $_POST['form'] == 'upload_font' ||  $_POST['form'] == 'update_font' ) ) {
+    
+    $font_title = isset( $_POST['font_title'] ) ? validate( $_POST['font_title'] ) : '';
+    $font_id = isset( $_POST['font_id'] ) ? validate( $_POST['font_id'] ) : 0;
+    $form = isset( $_POST['form'] ) ? validate( $_POST['form'] ) : '';
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = "all-fonts.php";
+
+    $file_tmp_name = $file_size = $file_type = $extension = $found_design = '';
+
+    if( isset( $_FILES['font_file']['name'] ) ) {
+        $file_name = validate( $_FILES['font_file']['name'] );
+        $file_tmp_name = validate( $_FILES['font_file']['tmp_name'] );
+        $file_size = validate( $_FILES['font_file']['size'] );
+        $file_type = validate( $_FILES['font_file']['type'] );
+
+        $allowed_extension = [ 'woff', 'ttf', 'otf', 'woff2', 'ttc' ];
+        $explode = explode( '.', $file_name );
+        $extension = end( $explode );
+
+        // Check exisitng font file
+        $check_title = mysqli_query( $mysqli, "SELECT font_title FROM eg_fonts WHERE font_title = '$font_title' AND font_id != $font_id ");
+        $found_title = mysqli_num_rows( $check_title );
+    }
+
+    $allowed_file_size = 5000000; // 5 MB file size allowed
+    $new_file_name = time().'.'.$extension;
+
+
+    if( isset( $font_title ) && isset( $file_name ) ) {
+        if( empty( $font_title ) && empty( $file_name ) ) {
+            $output['message'][] = 'All field is required.';
+        } else {
+
+            if( empty( $font_title ) ) {
+                $output['message'][] = 'Enter your font title.';
+            } elseif( !preg_match('/^[a-zA-Z. ]+$/', $font_title) ) {
+                $output['message'][] = 'Font title should be contain only characters.';
+            } elseif( strlen( $font_title) > 50 || strlen( $font_title ) < 2 ) {
+                $output['message'][] = 'Font title should be 2-50 characters long.';
+            } elseif( $found_title > 0 ) {
+                $output['message'][] = 'Font title is already exist.';
+            }
+            // Validate file name
+            if( $form == 'update_font' ) {
+                if( ! empty( $file_name ) ) {
+                    if ( ! in_array( $extension, $allowed_extension ) ) {
+                        $output['message'][] = 'Uploaded file type is not allowed. We are currently allowing ' . implode(', ', $allowed_extension )  .' filetype';
+                    } elseif( $file_size > $allowed_file_size ) {
+                        $output['message'][] = 'Your uploaded file size must be less than 5 MB';
+                    }
+                }   
+            } else {
+                if( empty( $file_name ) ) {
+                    $output['message'][] = 'Please upload your font file.';
+                } elseif ( ! in_array( $extension, $allowed_extension ) ) {
+                    $output['message'][] = 'Uploaded file type is not allowed. We are currently allowing ' . implode(', ', $allowed_extension )  .' filetype';
+                } elseif( $file_size > $allowed_file_size ) {
+                    $output['message'][] = 'Your uploaded file size must be less than 5 MB';
+                }
+            }
+            
+            
+            if( empty( $output['message'] ) ) {  
+
+                if( $form == 'upload_font' ) {
+                    $query = "INSERT INTO eg_fonts( font_title, font_name, font_file ) VALUES( '$font_title', '$new_file_name', '$file_name' )";
+                    $message = 'Successfully uploaded a new font.';
+                } else {
+                    $sql = " font_title = '$font_title' ";
+                    if( !empty( $file_name ) ) {
+                        $sql .= " ,font_name = '$new_file_name', font_file = '$file_name' ";
+                    }
+                    $query = "UPDATE eg_fonts SET $sql WHERE font_id = '$font_id'  ";
+                    $message = 'Successfully updated the font.';
+                } 
+
+                
+                $query = mysqli_query( $mysqli, $query );
+            
+                if( $query ) {
+                    if( !empty( $file_name ) ) {
+                        if( move_uploaded_file( $file_tmp_name, '../assets/fonts/'.$new_file_name ) ) {
+                            $output['success'] = true;
+                            $output['message'][] = $message;
+                        } else {
+                            $output['success'] = false;
+                            $output['message'][] = "Opps! something wen't wrong. font is not uploading...";
+                        }
+                    } else {
+                        $output['success'] = true;
+                        $output['message'][] = $message;
+                    }
+                } else {
+                    $output['success'] = false;
+                    $output['message'][] = "Opps! something wen't wrong." .  mysqli_error( $mysqli );
+                }
+            }
+        }
+    }
+    echo json_encode($output);
+}
+
 // Generate the design for edit version
 if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
     
@@ -96,8 +228,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
         
-        $design_font_path = '../Fonts/'.$design_font;
-        $domain_font_path = '../Fonts/'.$domain_font;
+        $design_font_path = '../assets/fonts/'.$design_font;
+        $domain_font_path = '../assets/fonts/'.$domain_font;
         $text = text2uni($design);
         $domain_name = text2uni($domain_name);
         
@@ -504,8 +636,8 @@ if( isset( $_REQUEST['form']) && $_REQUEST['form'] == 'output_design' ) {
         $black = imagecolorallocate($jpg_image, $r, $g, $b);
         $d_color = imagecolorallocate($jpg_image, $d_r, $d_g, $d_b);
 
-        $font_path = '../Fonts/'.$design_font;
-        $domain_font_path = '../Fonts/'.$domain_font;
+        $font_path = '../assets/fonts/'.$design_font;
+        $domain_font_path = '../assets/fonts/'.$domain_font;
         $text = $design;
         $text = text2uni($design);
         $domain_name = text2uni($domain_name);
@@ -630,7 +762,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'check_design' ) {
         header('Content-type: image/jpeg');
         $jpg_image = imagecreatefromjpeg("../assets/design/$design_img");
         $black = imagecolorallocate($jpg_image, 0, 0, 0);
-        $font_path = '../Fonts/HelveticaNeue-BoldItalic.otf';
+        $font_path = '../assets/fonts/HelveticaNeue-BoldItalic.otf';
         $text = $name;
         $font_size = 30;
         $angle = 0;

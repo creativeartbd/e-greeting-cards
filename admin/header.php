@@ -45,6 +45,15 @@ check_session();
                             <li><a class="dropdown-item" href="create-domain.php">Create domain</a></li>
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="font" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Fonts
+                        </a>
+                            <ul class="dropdown-menu" aria-labelledby="font">
+                            <li><a class="dropdown-item" href="all-fonts.php">All Font</a></li>
+                            <li><a class="dropdown-item" href="upload-font.php">Upload Font</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">Email Settings</a>
                     </li>

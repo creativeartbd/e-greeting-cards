@@ -5,6 +5,7 @@
             <h2>All Domain</h2>
         </div>
         <div class="col-md-12">
+            <div class="result"></div>
             <table class="table table-bordered">
                 <tr>
                     <th>S.l</th>

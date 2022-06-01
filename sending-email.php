@@ -66,8 +66,8 @@ require 'admin/vendor/autoload.php';
                 $title_color = imagecolorallocate($image, $r, $g, $b);
                 $domain_color = imagecolorallocate($image, $d_r, $d_g, $d_b);
 
-                $font_path = 'admin/Fonts/'.$design_font;
-                $domain_font_path = 'admin/Fonts/'.$domain_font;
+                $font_path = 'admin/assets/fonts/'.$design_font;
+                $domain_font_path = 'admin/assts/fonts/'.$domain_font;
                 $text = $name;
                 $text = text2uni($name);
                 $font_size = $design_font_size;
