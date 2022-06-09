@@ -974,7 +974,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'create_domain' ) {
 
         if( empty( $domain ) ) {
             $output['message'][] = 'Enter your domain name.';
-        } elseif( !preg_match('/^[@a-zA-Z. ]+$/', $domain) ) {
+        } elseif( ! preg_match('/^(?!(www|http|https)\.)\w+(\.\w+)+$/', $domain) ) {
             $output['message'][] = 'Your domain should be contain only characters.';
         } elseif( strlen( $domain) > 40 || strlen( $domain ) < 2 ) {
             $output['message'][] = 'Your domain should be 2-40 characters long.';
