@@ -1116,7 +1116,12 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
     $from_domain = validate( $_POST['from_domain'] );
     $from_name = validate( $_POST['from_name'] );
     $email_subject = validate( $_POST['email_subject'] );
-    $email_body = validate( $_POST['email_body'] );
+
+    $is_smtp = validate( $_POST['is_smtp'] );
+    $smtp_host = validate( $_POST['smtp_host'] );
+    $smtp_username = validate( $_POST['smtp_username'] );
+    $smtp_password = validate( $_POST['smtp_password'] );
+    $smtp_mail_port = validate( $_POST['smtp_mail_port'] );
     
     // Hold all errors
     $output['message'] = [];
@@ -1124,10 +1129,29 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
     $output['redirect'] = 'dashboard.php';
 
  
-    if( isset( $from_domain) && isset( $from_name ) && isset( $email_subject ) && isset( $email_body ) ) {
-        if( empty( $from_domain ) && empty( $from_name ) && empty( $email_subject ) && empty( $email_body ) ) {
+    if( isset( $from_domain) && isset( $from_name ) && isset( $email_subject ) && isset( $is_smtp ) ) {
+        if( empty( $from_domain ) && empty( $from_name ) && empty( $email_subject ) && empty( $is_smtp ) ) {
             $output['message'][] = 'All fields is required';
         } else {
+            // validate is smtp name
+            if( ! empty( $is_smtp ) ) {
+               if( empty( $smtp_host ) ) {
+                    $output['message'][] = 'SMTP host name is required';
+               }
+            }
+           
+            if( empty( $smtp_username ) ) {
+                $output['message'][] = 'SMTP username is required';
+            }
+
+            if( empty( $smtp_password ) ) {
+                $output['message'][] = 'SMTP password is required';
+            }
+
+            if( empty( $smtp_mail_port ) ) {
+                $output['message'][] = 'SMTP mail port is required';
+            }
+          
             // validate domain name
             if( empty( $from_domain ) ) {
                 $output['message'][] = 'Email from domain address is required';
@@ -1151,13 +1175,14 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
 
         if( empty( $output['message'] ) ) {
 
-            $uddate = mysqli_query( $mysqli, "UPDATE eg_email_settings SET from_domain = '$from_domain', from_name = '$from_name', email_subject = '$email_subject', email_body = '$email_body' ");
+            $uddate = mysqli_query( $mysqli, "UPDATE eg_email_settings SET from_domain = '$from_domain', from_name = '$from_name', email_subject = '$email_subject', is_smtp = '$is_smtp',  smtp_host = '$smtp_host', smtp_username = '$smtp_username', smtp_password = '$smtp_password', smtp_mail_port = '$smtp_mail_port' ");
+
             if( $uddate ) {
                 $output['success'] = true;
                 $output['message'][] = "Successfully updated the settings.";
             } else {
                 $output['success'] = false;
-                $output['message'][] = "Opps! something wen't wrong.";
+                $output['message'][] = "Opps! something wen't wrong." . mysqli_error( $mysqli );
             }
         }
         echo json_encode($output);

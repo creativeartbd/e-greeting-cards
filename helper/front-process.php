@@ -31,9 +31,9 @@ if( isset( $_POST['form']) && $_POST['form'] == 'send_email' ) {
             // validate email
             if( empty( $email ) ) {
                 $output['message'][] = 'Email address is required.';
-            } elseif( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-                $output['message'][] = 'Email address is not correct';
-            }
+            } elseif( !preg_match('/^[a-zA-Z]+$/', $email) ) {
+                $output['message'][] = 'Email address should contain only characters';
+            } 
             
             // validate domain
             if( empty( $domain ) ) {

@@ -2,6 +2,32 @@
     "use strict";
     $(document).ready(function () {
 
+        var ex_is_smtp = $("#is_smtp").val();
+        var ex_show_host = $(".show_host");
+        var ex_show_auth_details = $(".show_auth_details");
+
+        if ( ex_is_smtp == "yes" ) {
+            ex_show_host.show();
+            ex_show_auth_details.css("display", "flex");
+        }
+
+        
+        // Show/Hide is smtp option
+        $(document).on("change", "#is_smtp", function (e) {
+            var is_smtp = $(this).val();
+            var show_host = $(".show_host");
+            var show_auth_details = $(".show_auth_details");
+
+            if ("yes" === is_smtp) {
+                show_host.show();
+                show_auth_details.css("display", "flex");
+            } else if ("no" === is_smtp) {
+                show_host.hide();
+                show_auth_details.hide();
+            }
+        });
+
+        // Output the design
         $(document).on("click", ".output-desing", function (e) {
             e.preventDefault();
 

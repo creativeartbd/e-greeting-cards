@@ -6,11 +6,11 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-require 'admin/vendor/autoload.php';
+require_once 'admin/vendor/autoload.php';
 ?>
 <div class="container">
     <div class="row">
-        <div class="col-sm-6 mx-auto mt-5">
+        <div class="col-sm-4 mx-auto mt-5">
             <h2>Sent Card</h2>
             <?php
             // Get data from the url;
@@ -31,10 +31,18 @@ require 'admin/vendor/autoload.php';
                 // get email settings
                 $get_settings = mysqli_query( $mysqli, "SELECT * FROM eg_email_settings");
                 $get_result = mysqli_fetch_array( $get_settings, MYSQLI_ASSOC );
+
                 $from_domain = !empty( $get_result['from_domain'] ) ? $get_result['from_domain'] : '' ; 
                 $from_name = !empty( $get_result['from_name'] ) ? $get_result['from_name'] : '' ; 
                 $email_subject = !empty( $get_result['email_subject'] ) ?$get_result['email_subject'] : '' ; 
                 $email_body = !empty( $get_result['email_body'] ) ? $get_result['email_body'] : '' ;
+                $is_smtp = ! empty( $get_result['is_smtp'] ) ? validate( $get_result['is_smtp'] ) : '';
+                $smtp_host = ! empty( $get_result['smtp_host'] ) ? validate( $get_result['smtp_host'] ) : '';
+            
+                $smtp_username = ! empty( $get_result['smtp_username'] ) ? validate( $get_result['smtp_username'] ) : '';
+                $smtp_password = ! empty( $get_result['smtp_password'] ) ? validate( $get_result['smtp_password'] ) : '';
+                $smtp_mail_port = ! empty( $get_result['smtp_mail_port'] ) ? validate( $get_result['smtp_mail_port'] ) : '';
+    
 
                 // Result data
                 $get_result = mysqli_fetch_array( $get_domain, MYSQLI_ASSOC );
@@ -53,6 +61,7 @@ require 'admin/vendor/autoload.php';
                 $domain_font = $get_result['domain_font_name'];
 
                 $domain_name = $get_result['domain_name'];
+                $email = $email.'@'.$domain_name;
                 $domain_name = text2uni($domain_name);
 
                 $explode = explode( '.', $design_img );
@@ -95,6 +104,7 @@ require 'admin/vendor/autoload.php';
                 $x = $centerX - $left_offset;
                 $y = $centerY + $top_offset;
                 // Add text to image
+          
                 imagettftext( $image, $design_font_size, $angle, $design_x, $design_y, $title_color, $font_path, $text);
                 imagettftext( $image, $d_design_font_size, $angle, $d_design_x, $d_design_y, $domain_color, $domain_font_path, $domain_name);
                 //imagettftext($jpg_image, 25, 0, 655, 1200, $white, $font_path, $text);
@@ -114,8 +124,19 @@ require 'admin/vendor/autoload.php';
                 $mail = new PHPMailer(true);
                 try {  
                     //Recipients
-                    $mail->setFrom($from_domain, $from_name);
-                    $mail->addAddress($email, $name);  //Add a recipient
+                    
+                    $mail->isSMTP();      
+                    // $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+                    $mail->Host       = $smtp_host;
+                    $mail->Port       = $smtp_mail_port;;        
+                    $mail->SMTPAuth   = true;                                  
+                    $mail->Username   = $smtp_username;              
+                    $mail->Password   = $smtp_password;  
+    
+                    //Recipients
+                    $mail->setFrom( $from_domain, $from_name );
+                    $mail->addAddress( $email, $name );
+                   
                     //Content
                     $mail->isHTML(true);//Set email format to HTML
                     $mail->Subject = $email_subject;
@@ -124,7 +145,7 @@ require 'admin/vendor/autoload.php';
                     $mail->Body .= '<img src="cid:greetingcard">';
                     $mail->send();
 
-                    echo "<div class='alert alert-success mt-5'>Successfully sent your message.";
+                    echo "<div class='alert alert-success mt-5'>Congratulation! Your greeting card has been sent.";
                     
                 } catch (Exception $e) {
                     echo "<div class='alert alert-danger mt-5'>Message could not be sent. Mailer Error: {$mail->ErrorInfo}";

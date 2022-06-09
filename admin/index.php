@@ -1,5 +1,6 @@
 <?php 
 require_once 'helper/connection.php';
+
 if( isset( $_SESSION['username'] ) && !empty( $_SESSION['username'] ) ) {
     header("location:dashboard.php");
     exit();
@@ -36,7 +37,7 @@ if( isset( $_SESSION['username'] ) && !empty( $_SESSION['username'] ) ) {
                 <div class="mt-3">
                     <div class="result"></div>
                     <input type="hidden" name="form" value="login">
-                    <label>Forgot Password? Click <a href="forgot-password.php">here</a></label>
+                    <!-- <label>Forgot Password? Click <a href="forgot-password.php">here</a></label> -->
                 </div>
             </form>
         </div>
