@@ -24,14 +24,15 @@ if( isset( $_POST['form']) && $_POST['form'] == 'send_email' ) {
                 $output['message'][] = 'Your name is required.';
             } elseif( strlen( $name) > 40 || strlen( $name ) < 2 ) {
                 $output['message'][] = 'Your name should be between 2-40 characters long.';
-            } elseif( !preg_match('/^[a-zA-Z \d]+$/', $name) ) {
-                $output['message'][] = 'Your name should be contain only characters.';
             } 
+            // elseif( !preg_match('/^[a-zA-Z \d]+$/', $name) ) {
+            //     $output['message'][] = 'Your name should be contain only characters.';
+            // } 
             // validate email but not actual email
             // validate email
             if( empty( $email ) ) {
                 $output['message'][] = 'Email address is required.';
-            } elseif( !preg_match('/^[a-zA-Z]+$/', $email) ) {
+            } elseif( !preg_match('/^[a-zA-Z.]+$/', $email) ) {
                 $output['message'][] = 'Email address should contain only characters';
             } 
             

@@ -416,13 +416,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 $output['message'][] = 'Font size must be less than 100px';
             }
 
-            if( empty( $design_x ) ) {
-                $output['message'][] = 'Title X axios is required.';
-            } elseif( !preg_match('/^[0-9]+$/', $design_x) ) {
-                $output['message'][] = 'Title X axios value should be contain only number.';
-            } elseif( $design_x > 1000 ) {
-                $output['message'][] = 'Tille X axios value must be less than 1000px';
-            } 
+            // if( empty( $design_x ) ) {
+            //     $output['message'][] = 'Title X axios is required.';
+            // } elseif( !preg_match('/^[0-9]+$/', $design_x) ) {
+            //     $output['message'][] = 'Title X axios value should be contain only number.';
+            // } elseif( $design_x > 1000 ) {
+            //     $output['message'][] = 'Tille X axios value must be less than 1000px';
+            // } 
             
             if( empty( $design_y ) ) {
                 $output['message'][] = 'Title Y axios is required.';
@@ -449,13 +449,13 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
                 $output['message'][] = 'Domain size must be less than 100px';
             }
 
-            if( empty( $d_design_x ) ) {
-                $output['message'][] = 'Domain X axios is required.';
-            } elseif( !preg_match('/^[0-9]+$/', $d_design_x) ) {
-                $output['message'][] = 'Domain X axios value should be contain only number.';
-            } elseif( $d_design_x > 1000 ) {
-                $output['message'][] = 'Domain X axios value must be less than 1000px';
-            } 
+            // if( empty( $d_design_x ) ) {
+            //     $output['message'][] = 'Domain X axios is required.';
+            // } elseif( !preg_match('/^[0-9]+$/', $d_design_x) ) {
+            //     $output['message'][] = 'Domain X axios value should be contain only number.';
+            // } elseif( $d_design_x > 1000 ) {
+            //     $output['message'][] = 'Domain X axios value must be less than 1000px';
+            // } 
             
             if( empty( $d_design_y ) ) {
                 $output['message'][] = 'Domain Y axios is required.';
