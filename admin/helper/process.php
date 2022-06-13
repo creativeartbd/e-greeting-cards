@@ -273,6 +273,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
         if( !empty( $design_font_size ) ) {
             $font_size = $design_font_size;
         }
+
         if( !empty( $design_x ) ) {
             $x = $design_x;
         }
@@ -284,12 +285,12 @@ if( isset( $_POST['form']) && $_POST['form'] == 'edit_output_design' ) {
             $d_font_size = $d_design_font_size;
         }
         if( !empty( $d_design_x ) ) {
-            $d_x = $d_design_x;
+            $d_x = $x;
         }
         if( !empty( $d_design_y ) ) {
             $d_y = $d_design_y;
         }
-
+        
         imagettftext($jpg_image, $font_size, $angle, $x, $y, $black, $design_font_path, $text);
         imagettftext($jpg_image, $d_font_size, $angle, $d_x, $d_y, $d_color, $domain_font_path, $domain_name);
 
@@ -900,7 +901,7 @@ if( isset( $_POST['form']) && $_POST['form'] == 'delete_design' ) {
     echo json_encode($output);
 }
 
-// Create domain 
+// update domain 
 if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
 
     $domain = validate( $_POST['domain'] );
@@ -947,6 +948,83 @@ if( isset( $_POST['form']) && $_POST['form'] == 'update_domain' ) {
             if( $update ) {
                 $output['success'] = true;
                 $output['message'][] = "Successfully udpate the domain.";
+            } else {
+                $output['success'] = false;
+                $output['message'][] = "Opps! something wen't wrong.";
+            }
+        }
+        echo json_encode($output);
+    }
+}
+
+// update profile 
+if( isset( $_POST['form']) && $_POST['form'] == 'update_profile' ) {
+
+    $full_name = validate( $_POST['full_name'] );
+    $email = validate( $_POST['email'] );
+    $username = validate( $_POST['username'] );
+    $password = validate( $_POST['password'] );
+    $hash_password = hash( 'sha512', $password );
+
+    // Hold all errors
+    $output['message'] = [];
+    $output['success'] = false;
+    $output['redirect'] = "profile.php";
+
+    if( isset( $full_name ) && isset( $email ) && isset( $username ) ) {
+        if( empty( $full_name ) && empty( $email ) && empty( $username ) ) {
+            $output['message'][] = 'All field is required';
+        } else {
+            if( empty( $full_name ) ) {
+                $output['message'][] = 'Enter your full name.';
+            } elseif( !preg_match('/^[a-zA-Z. ]+$/', $full_name) ) {
+                $output['message'][] = 'Your full name should be contain only characters.';
+            } elseif( strlen( $full_name) > 100 || strlen( $full_name ) < 2 ) {
+                $output['message'][] = 'Your full name should be 2-100 characters long.';
+            }
+    
+            if( empty( $email ) ) {
+                $output['message'][] = 'Enter your email address.';
+            } elseif( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+                $output['message'][] = 'Your email address is not correct.';
+            }
+
+            if( empty( $username ) ) {
+                $output['message'][] = 'Enter your username.';
+            } elseif( !preg_match('/^[a-zA-Z]+$/', $username) ) {
+                $output['message'][] = 'Your username should be contain only characters.';
+            } elseif( strlen( $username) > 20 || strlen( $full_name ) < 2 ) {
+                $output['message'][] = 'Your username should be 2-20 characters long.';
+            }
+    
+            if( ! empty( $password ) ) {
+                if( strlen( $password ) < 6 ) {
+                    $output['message'][] = 'Your password should be at least 6 characters long';
+                }
+            }
+        }
+        
+
+        if( empty( $output['message'] ) ) {
+
+            $ses_username = validate( $_SESSION['username'] );
+            $sql = "UPDATE eg_users SET full_name = '$full_name', email = '$email'";
+            if( !empty( $username ) ) {
+                $sql .= " ,username = '$username' ";
+            }
+            if( !empty( $password ) ) {
+                $sql .= " ,password = '$hash_password' ";
+            }
+            $sql .= " WHERE username = '$ses_username' ";
+
+            $update = mysqli_query( $mysqli, $sql );
+
+            if( $update ) {
+                $output['success'] = true;
+                $output['message'][] = "Successfully udpated your profile.";
+                if( ! empty( $username ) ) {
+                    $_SESSION['username'] = $username;
+                }
             } else {
                 $output['success'] = false;
                 $output['message'][] = "Opps! something wen't wrong.";

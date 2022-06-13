@@ -58,7 +58,7 @@ check_session();
                         <a class="nav-link" href="dashboard.php">Email Settings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../index.php">Frontend</a>
+                        <a class="nav-link" href="profile.php">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-gradient-danger btn-sm text-white px-3" href="logout.php">Logout</a>
