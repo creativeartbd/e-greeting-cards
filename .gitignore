@@ -2,3 +2,4 @@ resources
 admin/assets/design
 admin/vendor
 admin/Fonts
+.DS_Store

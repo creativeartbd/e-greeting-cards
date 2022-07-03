@@ -383,10 +383,12 @@ if( isset( $_POST['form'] ) && ( $_POST['form'] == 'create_design' ||  $_POST['f
 
             if( empty( $design ) ) {
                 $output['message'][] = 'Enter your design title.';
-            } elseif( !preg_match('/^[a-zA-Z. ]+$/', $design) ) {
-                $output['message'][] = 'Your design title should be contain only characters.';
-            } elseif( strlen( $design) > 40 || strlen( $design ) < 2 ) {
-                $output['message'][] = 'Your design title should be 2-40 characters long.';
+            } 
+            // elseif( !preg_match('/^[a-zA-Z. ]+$/', $design) ) {
+            //     $output['message'][] = 'Your design title should be contain only characters.';
+            // } 
+            elseif( strlen( $design) > 100 || strlen( $design ) < 2 ) {
+                $output['message'][] = 'Your design title should be 2-100 characters long.';
             }
 
             if( 'update_design' == $form ) {
@@ -1200,6 +1202,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
     $smtp_username = validate( $_POST['smtp_username'] );
     $smtp_password = validate( $_POST['smtp_password'] );
     $smtp_mail_port = validate( $_POST['smtp_mail_port'] );
+
+    $show_preview = validate( $_POST['show_preview'] );
     
     // Hold all errors
     $output['message'] = [];
@@ -1207,8 +1211,8 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
     $output['redirect'] = 'dashboard.php';
 
  
-    if( isset( $from_domain) && isset( $from_name ) && isset( $email_subject ) && isset( $is_smtp ) ) {
-        if( empty( $from_domain ) && empty( $from_name ) && empty( $email_subject ) && empty( $is_smtp ) ) {
+    if( isset( $from_domain) && isset( $from_name ) && isset( $email_subject ) && isset( $is_smtp ) &&  isset( $show_preview ) ) {
+        if( empty( $from_domain ) && empty( $from_name ) && empty( $email_subject ) && empty( $is_smtp ) && empty( $show_preview ) ) {
             $output['message'][] = 'All fields is required';
         } else {
             // validate is smtp name
@@ -1248,12 +1252,16 @@ if( isset( $_POST['form']) && $_POST['form'] == 'email_settings' ) {
             } elseif( strlen( $email_subject) > 150 || strlen( $email_subject) < 2 ) {
                 $output['message'][] = 'Email subject title should be between 2-150 characters long';
             }
+
+            if( empty( $show_preview ) ) {
+                $output['message'][] = 'Select show preview on frontend';
+            }
     
         }
 
         if( empty( $output['message'] ) ) {
 
-            $uddate = mysqli_query( $mysqli, "UPDATE eg_email_settings SET from_domain = '$from_domain', from_name = '$from_name', email_subject = '$email_subject', is_smtp = '$is_smtp',  smtp_host = '$smtp_host', smtp_username = '$smtp_username', smtp_password = '$smtp_password', smtp_mail_port = '$smtp_mail_port' ");
+            $uddate = mysqli_query( $mysqli, "UPDATE eg_email_settings SET from_domain = '$from_domain', from_name = '$from_name', email_subject = '$email_subject', is_smtp = '$is_smtp',  smtp_host = '$smtp_host', smtp_username = '$smtp_username', smtp_password = '$smtp_password', smtp_mail_port = '$smtp_mail_port', show_preview = '$show_preview' ");
 
             if( $uddate ) {
                 $output['success'] = true;

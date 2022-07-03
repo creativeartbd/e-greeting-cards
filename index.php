@@ -1,4 +1,4 @@
-<?php require_once 'header.php'; echo hash('sha512', "J(#*)@MDNSK"); ?>
+<?php require_once 'header.php'; ?>
 <div class="container">
     <div class="row">
         <div class="col-sm-6 mt-5 mx-auto">

@@ -42,6 +42,8 @@ require_once 'admin/vendor/autoload.php';
                 $smtp_username = ! empty( $get_result['smtp_username'] ) ? validate( $get_result['smtp_username'] ) : '';
                 $smtp_password = ! empty( $get_result['smtp_password'] ) ? validate( $get_result['smtp_password'] ) : '';
                 $smtp_mail_port = ! empty( $get_result['smtp_mail_port'] ) ? validate( $get_result['smtp_mail_port'] ) : '';
+
+                $show_preview = ! empty( $get_result['show_preview'] ) ? validate( $get_result['show_preview'] ) : '';
     
 
                 // Result data
@@ -118,8 +120,10 @@ require_once 'admin/vendor/autoload.php';
                 imagedestroy( $image );
                 
                 $url = "admin/assets/design/design.".$extension;
-                echo "<img class='img-fluid' src='$url'>"; 
-                
+                if( 1 == $show_preview ) {
+                    echo "<img class='img-fluid' src='$url'>"; 
+                }
+        
                 //Create an instance; passing `true` enables exceptions
                 $mail = new PHPMailer(true);
                 try {  

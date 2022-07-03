@@ -21,6 +21,9 @@
             $smtp_username = isset( $get_result['smtp_username'] ) ? $get_result['smtp_username'] : '' ; 
             $smtp_password = isset( $get_result['smtp_password'] ) ? $get_result['smtp_password'] : '' ; 
             $smtp_mail_port = isset( $get_result['smtp_mail_port'] ) ? $get_result['smtp_mail_port'] : '' ; 
+
+            $show_preview = isset( $get_result['show_preview'] ) ? $get_result['show_preview'] : '' ; 
+            
             ?>
             <form id="form">
                 <div class="row">
@@ -80,6 +83,18 @@
                         <div class="mb-3">
                             <label for="email_subject" class="form-label">Email subject title</label>
                             <input type="text" name="email_subject" value="<?php echo $email_subject; ?>" class="form-control" id="email_subject">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="show_preview" class="form-label">Show preview on frontend</label>
+                            <select name="show_preview" id="show_preview" class="form-control">
+                                <option value="">--Select Option--</option>
+                                <option value="1" <?php if( 1 == $show_preview ) echo 'selected'; ?>>Yes</option>
+                                <option value="2" <?php if( 2 == $show_preview ) echo 'selected'; ?>>No</option>
+                            </select>
                         </div>
                     </div>
                 </div>
